@@ -4,7 +4,7 @@ i-know-this is a simple CLI tool for performing CRUD operations on json files. I
 
 ## Authors
 
-Leon Martin
+[Leon Martin](https://leonmartin.github.io/)
 
 ## License
 

@@ -1,0 +1,20 @@
+{
+    "entries": {
+        "movies": [
+            {
+                "title": "42's the Answer",
+                "year": "2000"
+            },
+            {
+                "title": "The Meme Wars",
+                "year": "2010"
+            }
+        ],
+        "books": [
+            {
+                "title": "Turtle's Can Fly in Space",
+                "year": "1885 UC"
+            }
+        ]
+    }
+}

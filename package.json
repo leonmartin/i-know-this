@@ -1,0 +1,28 @@
+{
+  "name": "i-know-this",
+  "version": "0.0.1",
+  "description": "A simple CLI tool for performing CRUD operations on json files.",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leonmartin/i-know-this.git"
+  },
+  "keywords": [
+    "CLI",
+    "json",
+    "CRUD"
+  ],
+  "author": "Leon Martin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leonmartin/i-know-this/issues"
+  },
+  "homepage": "https://github.com/leonmartin/i-know-this#readme",
+  "devDependencies": {
+    "jest": "^25.1.0"
+  }
+}

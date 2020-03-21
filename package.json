@@ -2,10 +2,10 @@
   "name": "i-know-this",
   "version": "0.0.1",
   "description": "A simple CLI tool for performing CRUD operations on json files.",
-  "main": "app.js",
+  "main": "js/app.js",
   "scripts": {
     "test": "jest",
-    "start": "node app.js"
+    "start": "node js/app.js"
   },
   "repository": {
     "type": "git",

@@ -12,8 +12,6 @@ function createWindow() {
     },
   });
 
-  win.setResizable(false)
-
   const menu = Menu.buildFromTemplate([
     {
       label: "Menu",

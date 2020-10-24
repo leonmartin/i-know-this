@@ -25,10 +25,10 @@
   </head>
 
   <body>
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          <nav id="sidebar">
+    <div class="container-fluid h-100">
+      <div class="row h-100">
+        <div class="col-3" id="sidebar-container">
+          <nav class="h-100" id="sidebar">
             <ul class="list-unstyled">
               <li class="sidebar-link" id="active">
                 <p class="sidebar-link-p">Overview</p>
@@ -42,8 +42,9 @@
             </ul>
           </nav>
         </div>
-
-        <div class="col" id="main-view"></div>
+        <div class="col" id="main-container">
+          <div id="main-view"></div>
+        </div>
       </div>
     </div>
 

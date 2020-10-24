@@ -5,10 +5,8 @@ import ListView from "./views/ListView.js";
 import AddView from "./views/AddView.js";
 
 const jsonInterface = new JsonInterface();
-
-var currentlySelected = "";
-var jsonData = {};
 const views = {};
+var currentlySelected = "Overview";
 
 // add event listeners to menu entries
 const $menuEntries = document.getElementsByClassName("sidebar-link-p");
@@ -29,9 +27,11 @@ function handleMenuClick($entry) {
   console.log(`Menu entry ${entryText} selected.`);
 
   // update active menu entry
-  currentlySelected = entryText;
-  document.getElementById("active").removeAttribute("id");
-  $entry.parentElement.id = "active";
+  if (currentlySelected !== entryText) {
+    currentlySelected = entryText;
+    document.getElementById("active").removeAttribute("id");
+    $entry.parentElement.id = "active";
+  }
 
   // create view instance if not already present
   if (views[entryText] === undefined) {
@@ -50,7 +50,7 @@ function handleMenuClick($entry) {
 
   // get view from view instance with respect to current json data
   let view = views[entryText].getView(jsonInterface.getJsonData());
-  
+
   // inject view
   const $mainContainer = document.getElementById("main-view");
   $mainContainer.innerHTML = view;

@@ -5,12 +5,21 @@
   font-weight: 300;
 }
 
-#sidebar {
+html,
+body {
   height: 100%;
-  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-  z-index: 1; /* Stay on top */
+}
+
+#sidebar-container {
+  margin: 0;
+  padding: 0;
+}
+
+#sidebar {
+  z-index: 1;
+  top: 0;
   left: 0;
-  background-color: #3d3d3d; /* Black */
+  background-color: #3d3d3d;
 }
 
 .sidebar-link-p {
@@ -24,6 +33,10 @@
 .sidebar-link:hover {
   transition: all 0.3s;
   background: #8c8c8c;
+}
+
+.main-container {
+  width: 100%;
 }
 
 .main-view {

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "build": "babel lib --out-dir dist",
-    "start": "npm run build && node dist/app.js"
+    "start": "node dist/app.js"
   },
   "repository": {
     "type": "git",

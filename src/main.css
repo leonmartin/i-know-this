@@ -1,9 +1,14 @@
 @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
 
+p {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+}
+
 #sidebar {
   height: 100%; /* Full-height: remove this if you want "auto" height */
-  min-width: 250px;
-  max-width: 250px;
+  min-width: 150px;
+  max-width: 200px;
   position: fixed; /* Fixed Sidebar (stay in place on scroll) */
   z-index: 1; /* Stay on top */
   top: 0; /* Stay at the top */
@@ -12,18 +17,16 @@
   overflow-x: hidden; /* Disable horizontal scroll */
 }
 
-.sidebar-link p {
+.sidebar-link-p {
   color: white;
-  font-family: "Poppins", sans-serif;
   font-size: 1.1em;
-  font-weight: 300;
   line-height: 1.7em;
   padding: 10px;
   margin: 0px;
 }
 
-.sidebar-link.active, .sidebar-link:hover {
+.sidebar-link#active,
+.sidebar-link:hover {
   transition: all 0.3s;
   background: #8c8c8c;
 }
-

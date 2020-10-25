@@ -14,7 +14,9 @@ class ListView {
                         ${key}
                         </button>
                         </h5>
-                    <span class="badge badge-primary badge-pill">${jsonData[key].length}</span>
+                    <span class="badge badge-primary badge-pill">${
+                      jsonData[key].length
+                    }</span>
                 </div>
             
                 <div id="collapse${key}" class="collapse" aria-labelledby="heading${key}" data-parent="#accordion">
@@ -36,7 +38,6 @@ class ListView {
   buildListElems(jsonArray) {
     let htmlListElems = ``;
     for (let elem of jsonArray) {
-      console.log(elem);
       htmlListElems += `<li class="list-group-item">`;
       for (let key in elem) {
         htmlListElems += `<p class="mb-0">${key}: ${elem[key]}</p>`;

@@ -1,10 +1,10 @@
-import JsonInterface from "./JsonInterface.js";
+import MainProcessInterface from "./MainProcessInterface.js";
 
 import OverviewView from "./views/OverviewView.js";
 import ListView from "./views/ListView.js";
 import AddView from "./views/AddView.js";
 
-const jsonInterface = new JsonInterface();
+const mainProcessInterface = new MainProcessInterface();
 const views = {};
 var currentlySelected = "Overview";
 
@@ -49,11 +49,31 @@ function handleMenuClick($entry) {
   }
 
   // get view from view instance with respect to current json data
-  let view = views[entryText].getView(jsonInterface.getJsonData());
+  const view = views[entryText].getView(mainProcessInterface.getJsonData());
 
-  // inject view
+  // inject the view
   const $mainContainer = document.getElementById("main-view");
   $mainContainer.innerHTML = view;
+
+  // add event handling for submit button in add view
+  // TODO: why is form data always empty?
+  if (currentlySelected == "Add") {
+    const $form = document.getElementById("add-form");
+    $form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      new FormData($form);
+    });
+
+    $form.addEventListener("formdata", (event) => {
+      console.log(event);
+
+      let formData = event.formData;
+      for (var [key, value] of formData.entries()) { 
+        console.log(key, value);
+      }
+    });
+  }
 }
 
 export { triggerViewUpdate };

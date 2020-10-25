@@ -1,4 +1,4 @@
-const { ipcRenderer } = window.require("electron");
+const { ipcRenderer } = window.nodeRequire("electron");
 import { triggerViewUpdate } from "./index.js";
 
 class JsonInterface {

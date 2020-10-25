@@ -2,22 +2,26 @@ class ListView {
   getView(jsonData) {
     this.currentData = jsonData;
 
-    let view = `<h1>List</h1>`;
+    let view = `<h1>List</h1>
+                <div id="accordion">`;
 
     for (let key in jsonData) {
       view += `
             <div class="card">
-                <div class="card-header" id="headingOne">
+                <div class="card-header d-flex justify-content-between align-items-center" id="heading${key}">
                     <h5 class="mb-0">
-                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse${key}" aria-expanded="true" aria-controls="collapse${key}">
                         ${key}
                         </button>
-                    </h5>
+                        </h5>
+                    <span class="badge badge-primary badge-pill">${jsonData[key].length}</span>
                 </div>
             
-                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-                    <div class="card-body">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                <div id="collapse${key}" class="collapse" aria-labelledby="heading${key}" data-parent="#accordion">
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            ${this.buildListElems(jsonData[key])}
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -27,6 +31,20 @@ class ListView {
     view += `</div>`;
 
     return view;
+  }
+
+  buildListElems(jsonArray) {
+    let htmlListElems = ``;
+    for (let elem of jsonArray) {
+      console.log(elem);
+      htmlListElems += `<li class="list-group-item">`;
+      for (let key in elem) {
+        htmlListElems += `<p class="mb-0">${key}: ${elem[key]}</p>`;
+      }
+      htmlListElems += `<//li>`;
+    }
+
+    return htmlListElems;
   }
 }
 

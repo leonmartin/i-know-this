@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, dialog } = require("electron");
+const { app, BrowserWindow, Menu, dialog, ipcMain } = require("electron");
 const fs = require("fs");
 const path = require("path");
 
@@ -15,6 +15,11 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+ipcMain.on('ASYNC_ADD_ENTRY', (event, arg) => {
+  console.log("Received a message on ASYNC_ADD_ENTRY channel.");
+  event.reply('ASYNC_ADD_ENTRY_REPLY', 'SUCCESS');
+})
 
 const isMac = process.platform === "darwin";
 const configPath = "./config.json";
@@ -93,7 +98,7 @@ function loadAndSendJsonFile(filePath, mainWindow) {
   try {
     let rawData = fs.readFileSync(filePath);
     let parsedJson = JSON.parse(rawData);
-    mainWindow.webContents.send("FILE_OPEN", parsedJson);
+    mainWindow.webContents.send("SYNC_FILE_OPEN", parsedJson);
   } catch (err) {
     console.error(err);
   }

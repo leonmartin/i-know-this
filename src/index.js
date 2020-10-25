@@ -22,6 +22,17 @@ function triggerViewUpdate() {
   handleMenuClick(document.getElementById("active"));
 }
 
+function displaySuccessfulAdd() {
+  document.getElementById(
+    "main-container"
+  ).innerHTML += `<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    New entry successfully added!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>`;
+}
+
 function handleMenuClick($entry) {
   const entryText = $entry.innerText;
   console.log(`Menu entry ${entryText} selected.`);
@@ -56,22 +67,33 @@ function handleMenuClick($entry) {
   $mainContainer.innerHTML = view;
 
   // add event handling for submit button in add view
-  if (currentlySelected == "Add") {
+  if (currentlySelected === "Add") {
     const $form = document.getElementById("add-form");
     $form.addEventListener("submit", (event) => {
       event.preventDefault();
 
-      let category = document.getElementById("category-input").value;
-      let title = document.getElementById("title-input").value;
+      const category = document.getElementById("category-input").value;
+      const entry = {};
 
-      let entry = { Title: title };
+      // iterate over other form groups to get key-value-pairs
+      const $formGroups = document.getElementsByClassName("form-group");
+
+      for (let $formGroup of $formGroups) {
+        const key = $formGroup.querySelector("label").innerText;
+
+        if (key === "Category") {
+          continue;
+        }
+
+        const value = $formGroup.querySelector("input").value;
+        entry[key] = value;
+      }
 
       console.log(category, entry);
 
-      // TODO
-      //mainProcessInterface.addEntry(category, title)
+      mainProcessInterface.addEntry(category, entry);
     });
   }
 }
 
-export { triggerViewUpdate };
+export { triggerViewUpdate, displaySuccessfulAdd };

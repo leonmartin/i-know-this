@@ -1,5 +1,8 @@
 class OverviewView {
   getView(jsonData) {
+
+    this.currentData = jsonData;
+    
     let view = `<h1>Overview</h1>`;
     for (let key in jsonData) {
       view += `

@@ -15,6 +15,12 @@ class MainProcessInterface {
   getJsonData() {
     return this.jsonData;
   }
+
+  addEntry(category, entry) {
+    this.jsonData[category].append(entry);
+    // send username to main.js
+    ipcRenderer.send("asynchronous-message", username);
+  }
 }
 
 export default MainProcessInterface;

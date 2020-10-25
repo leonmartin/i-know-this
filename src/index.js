@@ -56,22 +56,20 @@ function handleMenuClick($entry) {
   $mainContainer.innerHTML = view;
 
   // add event handling for submit button in add view
-  // TODO: why is form data always empty?
   if (currentlySelected == "Add") {
     const $form = document.getElementById("add-form");
     $form.addEventListener("submit", (event) => {
       event.preventDefault();
 
-      new FormData($form);
-    });
+      let category = document.getElementById("category-input").value;
+      let title = document.getElementById("title-input").value;
 
-    $form.addEventListener("formdata", (event) => {
-      console.log(event);
+      let entry = { Title: title };
 
-      let formData = event.formData;
-      for (var [key, value] of formData.entries()) { 
-        console.log(key, value);
-      }
+      console.log(category, entry);
+
+      // TODO
+      //mainProcessInterface.addEntry(category, title)
     });
   }
 }

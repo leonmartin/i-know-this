@@ -1,5 +1,5 @@
 const { ipcRenderer } = window.nodeRequire("electron");
-import { triggerViewUpdate, displaySuccessfulAdd } from "./index.js";
+import { triggerViewUpdate, displayNotification } from "./index.js";
 
 class MainProcessInterface {
   constructor() {
@@ -20,8 +20,9 @@ class MainProcessInterface {
     // listen to ASYNC_ADD_ENTRY_REPLY channel
     ipcRenderer.on("ASYNC_ADD_ENTRY_REPLY", (event, arg) => {
       console.log("Received a message on ASYNC_ADD_ENTRY_REPLY channel.");
+
       if (arg === "SUCCESS") {
-        displaySuccessfulAdd();
+        displayNotification("New entry successfully added!", "SUCCESS");
       }
     });
   }
@@ -34,9 +35,7 @@ class MainProcessInterface {
     // add entry; create new category if necessary
     this.jsonData[category] === undefined
       ? (this.jsonData[category] = [entry])
-      : (this.jsonData[category] += entry);
-
-    triggerViewUpdate();
+      : this.jsonData[category].push(entry);
 
     // send updated json data to main process on ADD_ENTRY channel
     ipcRenderer.send("ASYNC_ADD_ENTRY", this.jsonData);

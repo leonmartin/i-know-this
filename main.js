@@ -76,7 +76,7 @@ function createWindow() {
 
   Menu.setApplicationMenu(menu);
 
-  mainWindow.loadFile("./src/index.html");
+  mainWindow.loadFile("./src/html/index.html");
   mainWindow.webContents.openDevTools();
 
   // try to retrieve path of json database from previous session from config file and send it to renderer process

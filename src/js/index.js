@@ -1,4 +1,5 @@
 import MainProcessInterface from "./MainProcessInterface.js";
+import NotificationManager from "./NotificationManager.js";
 
 import OverviewView from "./views/OverviewView.js";
 import ListView from "./views/ListView.js";
@@ -22,15 +23,8 @@ function triggerViewUpdate() {
   handleMenuClick(document.getElementById("active"));
 }
 
-function displaySuccessfulAdd() {
-  document.getElementById(
-    "main-container"
-  ).innerHTML += `<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                    New entry successfully added!
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>`;
+function displayNotification(message, type) {
+  NotificationManager.displayNotification(message, type);
 }
 
 function handleMenuClick($entry) {
@@ -89,11 +83,11 @@ function handleMenuClick($entry) {
         entry[key] = value;
       }
 
-      console.log(category, entry);
-
       mainProcessInterface.addEntry(category, entry);
+
+      triggerViewUpdate();
     });
   }
 }
 
-export { triggerViewUpdate, displaySuccessfulAdd };
+export { triggerViewUpdate, displayNotification };

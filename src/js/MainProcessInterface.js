@@ -3,44 +3,39 @@ import { triggerViewUpdate, displayNotification } from "./index.js";
 
 class MainProcessInterface {
   constructor() {
-    this.jsonData = {};
     this.initListeners();
   }
 
   initListeners() {
     // listen to FILE_OPEN channel
-    ipcRenderer.on("SYNC_FILE_OPEN", (event, args) => {
-      console.log("Received a message on FILE_OPEN channel.");
+    ipcRenderer.on("JSON_DATA", (event, args) => {
+      console.log("Received a message on JSON_DATA channel.");
       this.jsonData = args;
       triggerViewUpdate();
-
-      event.returnValue = "SUCCESS";
     });
 
-    // listen to ASYNC_ADD_ENTRY_REPLY channel
-    ipcRenderer.on("ASYNC_ADD_ENTRY_REPLY", (event, arg) => {
-      console.log("Received a message on ASYNC_ADD_ENTRY_REPLY channel.");
+    // listen to NOTIFICATION_SUCCESS channel
+    ipcRenderer.on("NOTIFICATION_SUCCESS", (event, arg) => {
+      console.log("Received a message on NOTIFICATION_SUCCESS channel.");
+      displayNotification(arg, "SUCCESS");
+    });
 
-      if (arg === "SUCCESS") {
-        displayNotification("New entry successfully added!", "SUCCESS");
-      } else if (arg === "FAIL") {
-        displayNotification("Persisting new entry failed!", "FAIL");
-      }
+    // listen to NOTIFICATION_FAIL channel
+    ipcRenderer.on("NOTIFICATION_FAIL", (event, arg) => {
+      console.log("Received a message on NOTIFICATION_FAIL channel.");
+      displayNotification(arg, "FAIL");
     });
   }
 
   getJsonData() {
-    return this.jsonData;
+    return ipcRenderer.sendSync("REQUEST_JSON_DATA", "");
   }
 
   addEntry(category, entry) {
-    // add entry; create new category if necessary
-    this.jsonData[category] === undefined
-      ? (this.jsonData[category] = [entry])
-      : this.jsonData[category].push(entry);
-
+    const message = {};
+    message[category] = entry;
     // send updated json data to main process on ADD_ENTRY channel
-    ipcRenderer.send("ASYNC_ADD_ENTRY", this.jsonData);
+    ipcRenderer.send("ADD_ENTRY", message);
   }
 }
 

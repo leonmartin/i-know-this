@@ -14,8 +14,8 @@ for (let $entry of $menuEntries) {
   $entry.addEventListener("click", () => handleMenuClick($entry));
 }
 
-// inital call for building the view
-triggerViewUpdate();
+// // inital call for building the view
+// triggerViewUpdate();
 
 function triggerViewUpdate() {
   // update the view based on the currently active menu entry

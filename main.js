@@ -5,7 +5,7 @@ const path = require("path");
 app.whenReady().then(createWindow);
 const isMac = process.platform === "darwin";
 const configPath = "./config.json";
-const config = loadConfig(configPath);
+const config = loadJsonFromFile(configPath);
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
@@ -19,15 +19,29 @@ app.on("activate", () => {
   }
 });
 
-ipcMain.on("ASYNC_ADD_ENTRY", (event, arg) => {
-  console.log("Received a message on ASYNC_ADD_ENTRY channel.");
-  try {
-    filePath = config["json_path"];
-    fs.writeFileSync(filePath, JSON.stringify(arg));
-    event.reply("ASYNC_ADD_ENTRY_REPLY", "SUCCESS");
-  } catch (err) {
-    event.reply("ASYNC_ADD_ENTRY_REPLY", "FAIL");
-  }
+ipcMain.on("ADD_ENTRY", (event, arg) => {
+  console.log("Received a message on ADD_ENTRY channel.");
+
+  // extract category and entry
+  const category = Object.keys(arg)[0];
+  const entry = arg[category];
+  
+  const jsonData = loadJsonFromFile(config["json_path"]);
+  console.log(category, [entry], jsonData);
+
+  // add entry to json object in according category
+  jsonData[category] === undefined
+    ? (jsonData[category] = [entry])
+    : jsonData[category].push(entry);
+
+  // persist updated json
+  writeJsonToFile(config["json_path"], jsonData);
+  event.reply("NOTIFICATION_SUCCESS", "New entry successfully added!");
+});
+
+ipcMain.on("REQUEST_JSON_DATA", (event, arg) => {
+  console.log("Received a message on REQUEST_JSON_DATA channel.");
+  event.returnValue = loadJsonFromFile(config["json_path"]);
 });
 
 function createWindow() {
@@ -58,10 +72,12 @@ function createWindow() {
               .then((fileObj) => {
                 if (!fileObj.canceled) {
                   let filePath = path.relative(".", fileObj.filePaths[0]);
-                  //  and pass parsed json to renderer process
-                  loadAndSendJsonFile(filePath, mainWindow);
                   // save path to config file for next startup
-                  savePathToConfig(filePath);
+                  config["json_path"] = filePath;
+                  writeJsonToFile(configPath, config);
+                  // pass parsed json to renderer process
+                  let jsonData = loadJsonFromFile(config["json_path"]);
+                  sendJsonData(jsonData, mainWindow);
                 }
               })
               .catch((err) => {
@@ -81,39 +97,48 @@ function createWindow() {
 
   Menu.setApplicationMenu(menu);
 
+  // load index.html
   mainWindow.loadFile("./src/html/index.html");
   mainWindow.webContents.openDevTools();
 
-  // try to retrieve path of json database from previous session from config file and send it to renderer process
+  // check for json_path from previous session; fallback to default path if not present
+  if (config["json_path"] === undefined) {
+    config["json_path"] = "./res/default.json";
+  }
+
+  let jsonData = loadJsonFromFile(config["json_path"]);
+
+  // load json file
   // TODO: find better way to wait for startup completion than timeout
-  setTimeout(() => loadAndSendJsonFile(config["json_path"], mainWindow), 500);
+  setTimeout(() => sendJsonData(jsonData, mainWindow), 500);
 }
 
-function loadConfig() {
+function loadJsonFromFile(filePath) {
   try {
-    rawData = fs.readFileSync(configPath);
-    let parsedConfig = JSON.parse(rawData);
-    return parsedConfig;
+    rawData = fs.readFileSync(filePath);
+    let parsedData = JSON.parse(rawData);
+    return parsedData;
   } catch (err) {
     console.error(err);
+    mainWindow.webContents.send(
+      "NOTIFICATION_FAIL",
+      "JSON file could not be loaded!"
+    );
   }
 }
 
-function loadAndSendJsonFile(filePath, mainWindow) {
+function writeJsonToFile(filePath, jsonData) {
   try {
-    let rawData = fs.readFileSync(filePath);
-    let parsedJson = JSON.parse(rawData);
-    mainWindow.webContents.send("SYNC_FILE_OPEN", parsedJson);
+    fs.writeFileSync(filePath, JSON.stringify(jsonData));
   } catch (err) {
     console.error(err);
+    mainWindow.webContents.send(
+      "NOTIFICATION_FAIL",
+      "JSON file could not be written!"
+    );
   }
 }
 
-function savePathToConfig(filePath) {
-  try {
-    config["json_path"] = filePath;
-    fs.writeFileSync(configPath, JSON.stringify(config));
-  } catch (err) {
-    console.error(err);
-  }
+function sendJsonData(jsonData, mainWindow) {
+  mainWindow.webContents.send("JSON_DATA", jsonData);
 }

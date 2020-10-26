@@ -1,5 +1,5 @@
 class ListView {
-  getView(jsonData) {
+  static getView(jsonData) {
     this.currentData = jsonData;
 
     let view = `<h1>List</h1>
@@ -35,7 +35,7 @@ class ListView {
     return view;
   }
 
-  buildListElems(jsonArray) {
+  static buildListElems(jsonArray) {
     let htmlListElems = ``;
     for (let elem of jsonArray) {
       htmlListElems += `<li class="list-group-item">`;

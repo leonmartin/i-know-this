@@ -1,5 +1,5 @@
 class AddView {
-  getView() {
+  static getView() {
     let view = `<h1>Add</h1>`;
 
     view += `<form id="add-form">

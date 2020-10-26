@@ -23,6 +23,8 @@ class MainProcessInterface {
 
       if (arg === "SUCCESS") {
         displayNotification("New entry successfully added!", "SUCCESS");
+      } else if (arg === "FAIL") {
+        displayNotification("Persisting new entry failed!", "FAIL");
       }
     });
   }

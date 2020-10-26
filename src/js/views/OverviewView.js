@@ -1,5 +1,5 @@
 class OverviewView {
-  getView(jsonData) {
+  static getView(jsonData) {
 
     this.currentData = jsonData;
     

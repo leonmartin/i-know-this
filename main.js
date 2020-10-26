@@ -3,6 +3,9 @@ const fs = require("fs");
 const path = require("path");
 
 app.whenReady().then(createWindow);
+const isMac = process.platform === "darwin";
+const configPath = "./config.json";
+const config = loadConfig(configPath);
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
@@ -16,14 +19,16 @@ app.on("activate", () => {
   }
 });
 
-ipcMain.on('ASYNC_ADD_ENTRY', (event, arg) => {
+ipcMain.on("ASYNC_ADD_ENTRY", (event, arg) => {
   console.log("Received a message on ASYNC_ADD_ENTRY channel.");
-  event.reply('ASYNC_ADD_ENTRY_REPLY', 'SUCCESS');
-})
-
-const isMac = process.platform === "darwin";
-const configPath = "./config.json";
-const config = loadConfig(configPath);
+  try {
+    filePath = config["json_path"];
+    fs.writeFileSync(filePath, JSON.stringify(arg));
+    event.reply("ASYNC_ADD_ENTRY_REPLY", "SUCCESS");
+  } catch (err) {
+    event.reply("ASYNC_ADD_ENTRY_REPLY", "FAIL");
+  }
+});
 
 function createWindow() {
   const mainWindow = new BrowserWindow({

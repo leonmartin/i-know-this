@@ -6,7 +6,6 @@ import ListView from "./views/ListView.js";
 import AddView from "./views/AddView.js";
 
 const mainProcessInterface = new MainProcessInterface();
-const views = {};
 var currentlySelected = "Overview";
 
 // add event listeners to menu entries
@@ -38,56 +37,54 @@ function handleMenuClick($entry) {
     $entry.parentElement.id = "active";
   }
 
-  // create view instance if not already present
-  if (views[entryText] === undefined) {
-    switch (entryText) {
-      case "Overview":
-        views[entryText] = new OverviewView();
-        break;
-      case "List":
-        views[entryText] = new ListView();
-        break;
-      case "Add":
-        views[entryText] = new AddView();
-        break;
-    }
-  }
-
-  // get view from view instance with respect to current json data
-  const view = views[entryText].getView(mainProcessInterface.getJsonData());
-
-  // inject the view
+  let view;
   const $mainContainer = document.getElementById("main-view");
-  $mainContainer.innerHTML = view;
 
+  // get view with respect to selected menu entry and current json datas
+  switch (entryText) {
+    case "Overview":
+      view = OverviewView.getView(mainProcessInterface.getJsonData());
+      $mainContainer.innerHTML = view;
+      break;
+    case "List":
+      view = ListView.getView(mainProcessInterface.getJsonData());
+      $mainContainer.innerHTML = view;
+      break;
+    case "Add":
+      view = AddView.getView(mainProcessInterface.getJsonData());
+      $mainContainer.innerHTML = view;
+      addAddViewFunctionality();
+      break;
+  }
+}
+
+function addAddViewFunctionality() {
   // add event handling for submit button in add view
-  if (currentlySelected === "Add") {
-    const $form = document.getElementById("add-form");
-    $form.addEventListener("submit", (event) => {
-      event.preventDefault();
+  const $form = document.getElementById("add-form");
+  $form.addEventListener("submit", (event) => {
+    event.preventDefault();
 
-      const category = document.getElementById("category-input").value;
-      const entry = {};
+    const category = document.getElementById("category-input").value;
+    const entry = {};
 
-      // iterate over other form groups to get key-value-pairs
-      const $formGroups = document.getElementsByClassName("form-group");
+    // iterate over other form groups to get key-value-pairs
+    const $formGroups = document.getElementsByClassName("form-group");
 
-      for (let $formGroup of $formGroups) {
-        const key = $formGroup.querySelector("label").innerText;
+    for (let $formGroup of $formGroups) {
+      const key = $formGroup.querySelector("label").innerText;
 
-        if (key === "Category") {
-          continue;
-        }
-
-        const value = $formGroup.querySelector("input").value;
-        entry[key] = value;
+      if (key === "Category") {
+        continue;
       }
 
-      mainProcessInterface.addEntry(category, entry);
+      const value = $formGroup.querySelector("input").value;
+      entry[key] = value;
+    }
 
-      triggerViewUpdate();
-    });
-  }
+    mainProcessInterface.addEntry(category, entry);
+
+    triggerViewUpdate();
+  });
 }
 
 export { triggerViewUpdate, displayNotification };

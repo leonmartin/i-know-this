@@ -9,7 +9,7 @@ const mainProcessInterface = new MainProcessInterface();
 var currentlySelected = "Overview";
 
 const $menuEntries = document.getElementsByClassName("sidebar-link-p");
-const $mainContainer = document.getElementById("main-view");
+const $mainContainer = document.getElementById("main-container");
 
 // add event listeners to menu entries
 for (let $entry of $menuEntries) {
@@ -29,6 +29,7 @@ function displayNotification(message, type) {
 }
 
 function handleMenuClick($entry) {
+  $mainContainer.innerHTML = "";
   const entryText = $entry.innerText;
   console.log(`Menu entry ${entryText} selected.`);
 
@@ -60,33 +61,7 @@ function handleMenuClick($entry) {
 }
 
 function addAddViewFunctionality() {
-  // add event handling for submit button in add view
-  const $form = document.getElementById("add-form");
-  $form.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    const category = document.getElementById("category-input").value;
-    const entry = {};
-
-    // iterate over other form groups to get key-value-pairs
-    const $formGroups = document.getElementsByClassName("form-group");
-
-    for (let $formGroup of $formGroups) {
-      const key = $formGroup.querySelector("label").innerText;
-
-      if (key === "Category") {
-        continue;
-      }
-
-      const value = $formGroup.querySelector("input").value;
-      entry[key] = value;
-    }
-
-    mainProcessInterface.addEntry(category, entry);
-
-    triggerViewUpdate();
-  });
-
+  // add event handling for + button in add view
   const $addFormGroupButton = document.getElementById("add-additional-button");
 
   let counter = 0;
@@ -98,6 +73,50 @@ function addAddViewFunctionality() {
       $buttonGroup
     );
   });
+
+  // add event handling for submit button in add view
+  const $form = document.getElementById("add-form");
+  $form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const entry = {};
+
+    // get category
+    const category = document.getElementById("category-input").value;
+
+    // get title
+    const title = document.getElementById("title-input").value;
+    entry["Title"] = title;
+
+    // iterate over form groups for additional attributes to get other key-value-pairs
+    const $additionalAttributes = document.getElementsByClassName(
+      "additional-attribute"
+    );
+
+    for (let $additionalAttribute of $additionalAttributes) {
+      const key = $additionalAttribute.querySelector("#key-input").value;
+      const value = $additionalAttribute.querySelector("#value-input").value;
+
+      if (isInputValid(key) && isInputValid(value)) {
+        entry[key] = value;
+      }
+    }
+
+    // issue adding the entry
+    mainProcessInterface.addEntry(category, entry);
+
+    triggerViewUpdate();
+  });
+}
+
+function isInputValid(inputString) {
+  let isValid = true;
+
+  if (inputString === undefined || inputString === "") isValid = false;
+
+  if (inputString.trim() == "") isValid = false;
+
+  return isValid;
 }
 
 export { triggerViewUpdate, displayNotification };

@@ -22,14 +22,14 @@ class AddView {
 
   static getAdditionalFormGroupNode(number) {
     var template = document.createElement("template");
-    template.innerHTML = `<div>
+    template.innerHTML = `<div class="additional-attribute">
                             <div class="form-group">
                               <label>Additional Attribute #${number}</label>
-                              <input type="text" class="form-control" id="title-input" placeholder="Enter additional attribute ${number}">
+                              <input type="text" class="form-control" id="key-input" placeholder="Enter additional attribute #${number}">
                             </div>
                             <div class="form-group">
                               <label>Value of attribute #${number}</label>
-                              <input type="text" class="form-control" id="title-input" placeholder="Enter value of additional attribute ${number}">
+                              <input type="text" class="form-control" id="value-input" placeholder="Enter value of additional attribute #${number}">
                             </div>
                           </div>`;
     return template.content.firstChild;

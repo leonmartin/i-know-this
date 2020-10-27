@@ -8,14 +8,16 @@ import AddView from "./views/AddView.js";
 const mainProcessInterface = new MainProcessInterface();
 var currentlySelected = "Overview";
 
-// add event listeners to menu entries
 const $menuEntries = document.getElementsByClassName("sidebar-link-p");
+const $mainContainer = document.getElementById("main-view");
+
+// add event listeners to menu entries
 for (let $entry of $menuEntries) {
   $entry.addEventListener("click", () => handleMenuClick($entry));
 }
 
-// // inital call for building the view
-// triggerViewUpdate();
+// inital call for building the view
+triggerViewUpdate();
 
 function triggerViewUpdate() {
   // update the view based on the currently active menu entry
@@ -38,7 +40,6 @@ function handleMenuClick($entry) {
   }
 
   let view;
-  const $mainContainer = document.getElementById("main-view");
 
   // get view with respect to selected menu entry and current json datas
   switch (entryText) {
@@ -51,7 +52,7 @@ function handleMenuClick($entry) {
       $mainContainer.innerHTML = view;
       break;
     case "Add":
-      view = AddView.getView(mainProcessInterface.getJsonData());
+      view = AddView.getView();
       $mainContainer.innerHTML = view;
       addAddViewFunctionality();
       break;
@@ -84,6 +85,18 @@ function addAddViewFunctionality() {
     mainProcessInterface.addEntry(category, entry);
 
     triggerViewUpdate();
+  });
+
+  const $addFormGroupButton = document.getElementById("add-additional-button");
+
+  let counter = 0;
+
+  $addFormGroupButton.addEventListener("click", () => {
+    const $buttonGroup = document.getElementById("form-button-group");
+    $form.insertBefore(
+      AddView.getAdditionalFormGroupNode(++counter),
+      $buttonGroup
+    );
   });
 }
 

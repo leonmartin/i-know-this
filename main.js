@@ -19,6 +19,7 @@ app.on("activate", () => {
   }
 });
 
+// listeners
 ipcMain.on("ADD_ENTRY", (event, arg) => {
   console.log("Received a message on ADD_ENTRY channel.");
 
@@ -27,7 +28,6 @@ ipcMain.on("ADD_ENTRY", (event, arg) => {
   const entry = arg[category];
   
   const jsonData = loadJsonFromFile(config["json_path"]);
-  console.log(category, [entry], jsonData);
 
   // add entry to json object in according category
   jsonData[category] === undefined
@@ -77,7 +77,7 @@ function createWindow() {
                   writeJsonToFile(configPath, config);
                   // pass parsed json to renderer process
                   let jsonData = loadJsonFromFile(config["json_path"]);
-                  sendJsonData(jsonData, mainWindow);
+                  sendMessage("JSON_DATA", jsonData, mainWindow);
                 }
               })
               .catch((err) => {
@@ -106,11 +106,10 @@ function createWindow() {
     config["json_path"] = "./res/default.json";
   }
 
-  let jsonData = loadJsonFromFile(config["json_path"]);
-
   // load json file
+  let jsonData = loadJsonFromFile(config["json_path"]);
   // TODO: find better way to wait for startup completion than timeout
-  setTimeout(() => sendJsonData(jsonData, mainWindow), 500);
+  setTimeout(() => sendMessage("JSON_DATA", jsonData, mainWindow), 500);
 }
 
 function loadJsonFromFile(filePath) {
@@ -120,10 +119,6 @@ function loadJsonFromFile(filePath) {
     return parsedData;
   } catch (err) {
     console.error(err);
-    mainWindow.webContents.send(
-      "NOTIFICATION_FAIL",
-      "JSON file could not be loaded!"
-    );
   }
 }
 
@@ -132,13 +127,9 @@ function writeJsonToFile(filePath, jsonData) {
     fs.writeFileSync(filePath, JSON.stringify(jsonData));
   } catch (err) {
     console.error(err);
-    mainWindow.webContents.send(
-      "NOTIFICATION_FAIL",
-      "JSON file could not be written!"
-    );
   }
 }
 
-function sendJsonData(jsonData, mainWindow) {
-  mainWindow.webContents.send("JSON_DATA", jsonData);
+function sendMessage(channel, content, window) {
+  window.webContents.send(channel, content);
 }

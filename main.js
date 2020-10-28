@@ -1,11 +1,11 @@
+const FileManager = require("./src/js/backend/FileManager.js");
+
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require("electron");
-const fs = require("fs");
 const path = require("path");
 
-app.whenReady().then(createWindow);
+let config = {};
+app.whenReady().then(createWindow).then(initListeners);
 const isMac = process.platform === "darwin";
-const configPath = "./config.json";
-const config = loadJsonFromFile(configPath);
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
@@ -19,32 +19,8 @@ app.on("activate", () => {
   }
 });
 
-// listeners
-ipcMain.on("ADD_ENTRY", (event, arg) => {
-  console.log("Received a message on ADD_ENTRY channel.");
-
-  // extract category and entry
-  const category = Object.keys(arg)[0];
-  const entry = arg[category];
-  
-  const jsonData = loadJsonFromFile(config["json_path"]);
-
-  // add entry to json object in according category
-  jsonData[category] === undefined
-    ? (jsonData[category] = [entry])
-    : jsonData[category].push(entry);
-
-  // persist updated json
-  writeJsonToFile(config["json_path"], jsonData);
-  event.reply("NOTIFICATION_SUCCESS", "New entry successfully added!");
-});
-
-ipcMain.on("REQUEST_JSON_DATA", (event, arg) => {
-  console.log("Received a message on REQUEST_JSON_DATA channel.");
-  event.returnValue = loadJsonFromFile(config["json_path"]);
-});
-
 function createWindow() {
+  config = FileManager.loadConfigFromFile()
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -63,7 +39,7 @@ function createWindow() {
           label: "Open File",
           accelerator: "CmdOrCtrl+O",
           click() {
-            // show dialog to select json file
+            // show dialog to open json file
             dialog
               .showOpenDialog({
                 properties: ["openFile"],
@@ -71,13 +47,24 @@ function createWindow() {
               })
               .then((fileObj) => {
                 if (!fileObj.canceled) {
-                  let filePath = path.relative(".", fileObj.filePaths[0]);
+                  const filePath = path.relative(".", fileObj.filePaths[0]);
                   // save path to config file for next startup
                   config["json_path"] = filePath;
-                  writeJsonToFile(configPath, config);
+                  FileManager.writeConfigToFile(config);
                   // pass parsed json to renderer process
-                  let jsonData = loadJsonFromFile(config["json_path"]);
-                  sendMessage("JSON_DATA", jsonData, mainWindow);
+                  const jsonData = FileManager.loadJsonFromFile(
+                    config["json_path"]
+                  );
+
+                  if (jsonData) {
+                    sendMessage("JSON_DATA", jsonData, mainWindow);
+                  } else {
+                    sendMessage(
+                      "NOTIFICATION_FAIL",
+                      "JSON data could not be loaded!",
+                      mainWindow
+                    );
+                  }
                 }
               })
               .catch((err) => {
@@ -100,36 +87,38 @@ function createWindow() {
   // load index.html
   mainWindow.loadFile("./src/html/index.html");
   mainWindow.webContents.openDevTools();
-
-  // check for json_path from previous session; fallback to default path if not present
-  if (config["json_path"] === undefined) {
-    config["json_path"] = "./res/default.json";
-  }
-
-  // load json file
-  let jsonData = loadJsonFromFile(config["json_path"]);
-  // TODO: find better way to wait for startup completion than timeout
-  setTimeout(() => sendMessage("JSON_DATA", jsonData, mainWindow), 500);
-}
-
-function loadJsonFromFile(filePath) {
-  try {
-    rawData = fs.readFileSync(filePath);
-    let parsedData = JSON.parse(rawData);
-    return parsedData;
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-function writeJsonToFile(filePath, jsonData) {
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(jsonData));
-  } catch (err) {
-    console.error(err);
-  }
 }
 
 function sendMessage(channel, content, window) {
   window.webContents.send(channel, content);
+}
+
+function initListeners() {
+  // init listeners
+  ipcMain.on("REQUEST_JSON_DATA", (event, arg) => {
+    console.log("Received a message on REQUEST_JSON_DATA channel.");
+    event.returnValue = FileManager.loadJsonFromFile(config["json_path"]);
+  });
+
+  ipcMain.on("ADD_ENTRY", (event, arg) => {
+    console.log("Received a message on ADD_ENTRY channel.");
+
+    // extract category and entry
+    const category = Object.keys(arg)[0];
+    const entry = arg[category];
+
+    const jsonData = FileManager.loadJsonFromFile(config["json_path"]);
+
+    // add entry to json object in according category
+    jsonData[category] === undefined
+      ? (jsonData[category] = [entry])
+      : jsonData[category].push(entry);
+
+    // persist updated json
+    if (FileManager.writeJsonToFile(config["json_path"], jsonData)) {
+      event.reply("NOTIFICATION_SUCCESS", "New entry successfully saved!");
+    } else {
+      event.reply("NOTIFICATION_FAIL", "New entry could not be saved!");
+    }
+  });
 }

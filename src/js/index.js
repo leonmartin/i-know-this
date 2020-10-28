@@ -77,6 +77,7 @@ function addAddViewFunctionality() {
   // add event handling for submit button in add view
   const $form = document.getElementById("add-form");
   $form.addEventListener("submit", (event) => {
+    // prevent default form behavior
     event.preventDefault();
 
     const entry = {};
@@ -102,8 +103,10 @@ function addAddViewFunctionality() {
       }
     }
 
-    // issue adding the entry
-    mainProcessInterface.addEntry(category, entry);
+    // issue adding the entry if category and title are valid
+    if (isInputValid(category) && isInputValid(title)) {
+      mainProcessInterface.addEntry(category, entry);
+    }
 
     triggerViewUpdate();
   });

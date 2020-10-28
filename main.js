@@ -3,7 +3,8 @@ const FileManager = require("./src/js/backend/FileManager.js");
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require("electron");
 const path = require("path");
 
-let config = {};
+FileManager.createFolderStructure();
+
 app.whenReady().then(createWindow).then(initListeners);
 const isMac = process.platform === "darwin";
 
@@ -20,7 +21,6 @@ app.on("activate", () => {
 });
 
 function createWindow() {
-  config = FileManager.loadConfigFromFile()
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
@@ -49,11 +49,13 @@ function createWindow() {
                 if (!fileObj.canceled) {
                   const filePath = path.relative(".", fileObj.filePaths[0]);
                   // save path to config file for next startup
-                  config["json_path"] = filePath;
-                  FileManager.writeConfigToFile(config);
+                  FileManager.loadConfigFromFile()["json_path"] = filePath;
+                  FileManager.writeConfigToFile(
+                    FileManager.loadConfigFromFile()
+                  );
                   // pass parsed json to renderer process
                   const jsonData = FileManager.loadJsonFromFile(
-                    config["json_path"]
+                    FileManager.loadConfigFromFile()["json_path"]
                   );
 
                   if (jsonData) {
@@ -87,6 +89,9 @@ function createWindow() {
   // load index.html
   mainWindow.loadFile("./src/html/index.html");
   mainWindow.webContents.openDevTools();
+
+  // close dev tools for testing
+  if (process.env.NODE_ENV === "test") win.webContents.closeDevTools();
 }
 
 function sendMessage(channel, content, window) {
@@ -97,7 +102,9 @@ function initListeners() {
   // init listeners
   ipcMain.on("REQUEST_JSON_DATA", (event, arg) => {
     console.log("Received a message on REQUEST_JSON_DATA channel.");
-    event.returnValue = FileManager.loadJsonFromFile(config["json_path"]);
+    event.returnValue = FileManager.loadJsonFromFile(
+      FileManager.loadConfigFromFile()["json_path"]
+    );
   });
 
   ipcMain.on("ADD_ENTRY", (event, arg) => {
@@ -107,7 +114,9 @@ function initListeners() {
     const category = Object.keys(arg)[0];
     const entry = arg[category];
 
-    const jsonData = FileManager.loadJsonFromFile(config["json_path"]);
+    const jsonData = FileManager.loadJsonFromFile(
+      FileManager.loadConfigFromFile()["json_path"]
+    );
 
     // add entry to json object in according category
     jsonData[category] === undefined
@@ -115,7 +124,12 @@ function initListeners() {
       : jsonData[category].push(entry);
 
     // persist updated json
-    if (FileManager.writeJsonToFile(config["json_path"], jsonData)) {
+    if (
+      FileManager.writeJsonToFile(
+        FileManager.loadConfigFromFile()["json_path"],
+        jsonData
+      )
+    ) {
       event.reply("NOTIFICATION_SUCCESS", "New entry successfully saved!");
     } else {
       event.reply("NOTIFICATION_FAIL", "New entry could not be saved!");

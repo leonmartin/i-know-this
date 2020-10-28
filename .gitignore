@@ -1,3 +1,6 @@
+# Directory for builds
+resources
+
 # Logs
 logs
 *.log

@@ -88,10 +88,9 @@ function createWindow() {
 
   // load index.html
   mainWindow.loadFile("./src/html/index.html");
-  mainWindow.webContents.openDevTools();
 
   // close dev tools for testing
-  if (process.env.NODE_ENV === "test") win.webContents.closeDevTools();
+  if (process.env.NODE_ENV !== "test") win.webContents.openDevTools();
 }
 
 function sendMessage(channel, content, window) {

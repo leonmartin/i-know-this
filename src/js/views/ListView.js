@@ -6,28 +6,27 @@ class ListView {
                 <div id="accordion">`;
 
     for (let key in jsonData) {
-      view += `
-            <div class="card">
+      view += `<div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center" id="heading${key}">
-                    <h5 class="mb-0">
-                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse${key}" aria-expanded="true" aria-controls="collapse${key}">
+                  <h5 class="mb-0">
+                      <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse${key}" aria-expanded="true" aria-controls="collapse${key}">
                         ${key}
-                        </button>
-                        </h5>
-                    <span class="badge badge-primary badge-pill">${
-                      jsonData[key].length
-                    }</span>
+                      </button>
+                      </h5>
+                  <span class="badge badge-primary badge-pill">${
+                    jsonData[key].length
+                  }</span>
                 </div>
             
                 <div id="collapse${key}" class="collapse" aria-labelledby="heading${key}" data-parent="#accordion">
-                    <div class="card-body p-0">
-                        <ul class="list-group list-group-flush">
-                            ${this.buildListElems(jsonData[key])}
-                        </ul>
-                    </div>
+                  <div class="card-body p-0">
+                    <ul class="list-group list-group-flush col-">
+                        ${this.buildList(jsonData[key])}
+                    </ul>
+                    
+                  </div>
                 </div>
-            </div>
-          `;
+              </div>`;
     }
 
     view += `</div>`;
@@ -35,17 +34,27 @@ class ListView {
     return view;
   }
 
-  static buildListElems(jsonArray) {
-    let htmlListElems = ``;
+  static buildList(jsonArray) {
+    let htmlList = ``;
+
     for (let elem of jsonArray) {
-      htmlListElems += `<li class="list-group-item">`;
+      let paragraphs = ``;
+
       for (let key in elem) {
-        htmlListElems += `<p class="mb-0">${key}: ${elem[key]}</p>`;
+        paragraphs += `<p class="mb-0">${key}: ${elem[key]}</p>`;
       }
-      htmlListElems += `<//li>`;
+
+      htmlList += `<li class="list-group-item">
+                      <div class="row">
+                        <div class="col-10">
+                          ${paragraphs}
+                        </div>
+                        <i class="fas fa-trash-alt col-2"></i>
+                      </div>
+                    </li>`;
     }
 
-    return htmlListElems;
+    return htmlList;
   }
 }
 

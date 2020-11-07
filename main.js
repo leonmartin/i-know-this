@@ -90,7 +90,7 @@ function createWindow() {
   mainWindow.loadFile("./src/html/index.html");
 
   // close dev tools for testing
-  if (process.env.NODE_ENV !== "test") win.webContents.openDevTools();
+  if (process.env.NODE_ENV !== "test") mainWindow.webContents.openDevTools();
 }
 
 function sendMessage(channel, content, window) {
@@ -100,14 +100,16 @@ function sendMessage(channel, content, window) {
 function initListeners() {
   // init listeners
   ipcMain.on("REQUEST_JSON_DATA", (event, arg) => {
-    console.log("Received a message on REQUEST_JSON_DATA channel.");
+    console.log(
+      "Main process received a message on REQUEST_JSON_DATA channel."
+    );
     event.returnValue = FileManager.loadJsonFromFile(
       FileManager.loadConfigFromFile()["json_path"]
     );
   });
 
   ipcMain.on("ADD_ENTRY", (event, arg) => {
-    console.log("Received a message on ADD_ENTRY channel.");
+    console.log("Main process received a message on ADD_ENTRY channel.");
 
     // extract category and entry
     const category = Object.keys(arg)[0];
@@ -132,6 +134,40 @@ function initListeners() {
       event.reply("NOTIFICATION_SUCCESS", "New entry successfully saved!");
     } else {
       event.reply("NOTIFICATION_FAIL", "New entry could not be saved!");
+    }
+  });
+
+  ipcMain.on("DELETE_ENTRY", (event, arg) => {
+    console.log("Main process received a message on DELETE_ENTRY channel.");
+
+    // extract category and entry
+    const category = Object.keys(arg)[0];
+    const entry = arg[category];
+
+    const jsonData = FileManager.loadJsonFromFile(
+      FileManager.loadConfigFromFile()["json_path"]
+    );
+
+    let index;
+
+    for (elementIndex in jsonData[category]) {
+      if (jsonData[category][elementIndex] == entry) {
+        index = elementIndex;
+      }
+    }
+
+    jsonData = jsonData[category].splice(elementIndex, 1);
+
+    // persist updated json
+    if (
+      FileManager.writeJsonToFile(
+        FileManager.loadConfigFromFile()["json_path"],
+        jsonData
+      )
+    ) {
+      event.reply("NOTIFICATION_SUCCESS", "Entry successfully deleted!");
+    } else {
+      event.reply("NOTIFICATION_FAIL", "Entry could not be deleted!");
     }
   });
 }

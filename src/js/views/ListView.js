@@ -20,7 +20,7 @@ class ListView {
             
                 <div id="collapse${key}" class="collapse" aria-labelledby="heading${key}" data-parent="#accordion">
                   <div class="card-body p-0">
-                    <ul class="list-group list-group-flush col-">
+                    <ul class="list-group list-group-flush">
                         ${this.buildList(jsonData[key])}
                     </ul>
                     
@@ -45,11 +45,13 @@ class ListView {
       }
 
       htmlList += `<li class="list-group-item">
-                      <div class="row">
-                        <div class="col-10">
+                      <div class="row d-flex justify-content-between align-items-center">
+                        <div class="">
                           ${paragraphs}
                         </div>
-                        <i class="fas fa-trash-alt col-2"></i>
+                        <div class="">
+                          <button class="btn btn-primary far fa-trash-alt"></button>
+                        </div>
                       </div>
                     </li>`;
     }

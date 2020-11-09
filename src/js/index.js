@@ -40,11 +40,11 @@ function handleMenuClick($entry) {
     case "Add":
       AddView.renderView();
       AddView.bindPlusButtonClick();
-      AddView.bindAddButtonClick(() => {
-        mainProcessInterface.addEntry(AddView.getValidatedEntry());
+      AddView.bindAddButtonClick((entry) => {
+        mainProcessInterface.addEntry(entry);
       });
       break;
   }
 }
 
-export { triggerViewUpdate, displayNotification };
+export { displayNotification };

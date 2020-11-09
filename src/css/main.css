@@ -35,14 +35,14 @@ body {
   background: #8c8c8c;
 }
 
-.main-container {
-  width: 100%;
-}
-
 .main-view {
   min-width: 300px;
 }
 
-.delete-button {
-  
+#notification-container {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 10%;
 }

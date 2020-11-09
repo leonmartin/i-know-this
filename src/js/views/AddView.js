@@ -51,6 +51,15 @@ class AddView {
     });
   }
 
+  static bindAddButtonClick(callback) {
+    const $addButton = document.getElementById("add-button");
+    $addButton.addEventListener("click", (event) => {
+      // prevent default form behavior
+      // event.preventDefault();
+      callback(this.getValidatedEntry());
+    });
+  }
+
   static getValidatedEntry() {
     const entry = {};
 
@@ -93,15 +102,6 @@ class AddView {
     if (inputString.trim() == "") isValid = false;
 
     return isValid;
-  }
-
-  static bindAddButtonClick(callback) {
-    const $form = document.getElementById("add-form");
-    $form.addEventListener("submit", (event) => {
-      // prevent default form behavior
-      event.preventDefault();
-      callback();
-    });
   }
 }
 

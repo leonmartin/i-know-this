@@ -1,5 +1,5 @@
 const { ipcRenderer } = window.nodeRequire("electron");
-import { triggerViewUpdate, displayNotification } from "./index.js";
+import { displayNotification } from "./index.js";
 
 class MainProcessInterface {
   constructor() {
@@ -11,7 +11,6 @@ class MainProcessInterface {
     ipcRenderer.on("JSON_DATA", (event, args) => {
       console.log("Renderer process received a message on JSON_DATA channel.");
       this.jsonData = args;
-      triggerViewUpdate();
     });
 
     // listen to NOTIFICATION_SUCCESS channel

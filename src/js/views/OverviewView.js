@@ -1,8 +1,8 @@
 class OverviewView {
-  static getView(jsonData) {
+  static renderView(jsonData) {
 
-    this.currentData = jsonData;
-    
+    const $mainContainer = document.getElementById("main-container");
+
     let view = `<h1>Overview</h1>`;
     for (let key in jsonData) {
       view += `
@@ -15,7 +15,7 @@ class OverviewView {
         `;
     }
 
-    return view;
+    $mainContainer.innerHTML = view;
   }
 }
 

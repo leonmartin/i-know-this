@@ -1,6 +1,6 @@
 class ListView {
-  static getView(jsonData) {
-    this.currentData = jsonData;
+  static renderView(jsonData) {
+    const $mainContainer = document.getElementById("main-container");
 
     let view = `<h1>List</h1>
                 <div id="accordion">`;
@@ -31,7 +31,7 @@ class ListView {
 
     view += `</div>`;
 
-    return view;
+    $mainContainer.innerHTML = view;
   }
 
   static buildList(jsonArray) {

@@ -1,5 +1,7 @@
 class AddView {
-  static getView() {
+  static renderView() {
+    const $mainContainer = document.getElementById("main-container");
+
     let view = `<h1>Add</h1>`;
 
     view += `<form id="add-form">
@@ -17,22 +19,89 @@ class AddView {
                 </div>
             </form>`;
 
-    return view;
+    $mainContainer.innerHTML = view;
   }
 
-  static getAdditionalFormGroupNode(number) {
-    var template = document.createElement("template");
-    template.innerHTML = `<div class="additional-attribute">
+  static bindPlusButtonClick() {
+    const $addFormGroupButton = document.getElementById(
+      "add-additional-button"
+    );
+
+    let counter = 0;
+
+    $addFormGroupButton.addEventListener("click", () => {
+      counter++;
+
+      const $form = document.getElementById("add-form");
+      const $buttonGroup = document.getElementById("form-button-group");
+
+      const template = document.createElement("template");
+      template.innerHTML = `<div class="additional-attribute">
                             <div class="form-group">
-                              <label>Additional Attribute #${number}</label>
-                              <input type="text" class="form-control" id="key-input" placeholder="Enter additional attribute #${number}">
+                              <label>Additional Attribute #${counter}</label>
+                              <input type="text" class="form-control" id="key-input" placeholder="Enter additional attribute #${counter}">
                             </div>
                             <div class="form-group">
-                              <label>Value of attribute #${number}</label>
-                              <input type="text" class="form-control" id="value-input" placeholder="Enter value of additional attribute #${number}">
+                              <label>Value of attribute #${counter}</label>
+                              <input type="text" class="form-control" id="value-input" placeholder="Enter value of additional attribute #${counter}">
                             </div>
                           </div>`;
-    return template.content.firstChild;
+
+      $form.insertBefore(template.content.firstChild, $buttonGroup);
+    });
+  }
+
+  static getValidatedEntry() {
+    const entry = {};
+
+    // get category
+    const category = document.getElementById("category-input").value;
+
+    // get title
+    const title = document.getElementById("title-input").value;
+    entry["Title"] = title;
+
+    // iterate over form groups for additional attributes to get other key-value-pairs
+    const $additionalAttributes = document.getElementsByClassName(
+      "additional-attribute"
+    );
+
+    for (let $additionalAttribute of $additionalAttributes) {
+      const key = $additionalAttribute.querySelector("#key-input").value;
+      const value = $additionalAttribute.querySelector("#value-input").value;
+
+      if (this.isInputValid(key) && this.isInputValid(value)) {
+        entry[key] = value;
+      }
+    }
+
+    const validatedEntry = {};
+
+    // return the entry if category and title are valid
+    if (this.isInputValid(category) && this.isInputValid(title)) {
+      validatedEntry[category] = entry;
+    }
+
+    return validatedEntry;
+  }
+
+  static isInputValid(inputString) {
+    let isValid = true;
+
+    if (inputString === undefined || inputString === "") isValid = false;
+
+    if (inputString.trim() == "") isValid = false;
+
+    return isValid;
+  }
+
+  static bindAddButtonClick(callback) {
+    const $form = document.getElementById("add-form");
+    $form.addEventListener("submit", (event) => {
+      // prevent default form behavior
+      event.preventDefault();
+      callback();
+    });
   }
 }
 

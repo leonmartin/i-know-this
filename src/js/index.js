@@ -15,12 +15,7 @@ for (let $entry of $menuEntries) {
 }
 
 // inital call for building the view
-triggerViewUpdate();
-
-function triggerViewUpdate() {
-  // update the view based on the currently active menu entry
-  handleMenuClick(document.getElementById("active"));
-}
+handleMenuClick(document.getElementById("active"));
 
 function displayNotification(message, type) {
   NotificationManager.displayNotification(message, type);

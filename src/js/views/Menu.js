@@ -1,13 +1,12 @@
 class Menu {
-  static updateMenu($entry) {
-    const entryText = $entry.innerText;
-    console.log(`Menu entry ${entryText} selected.`);
+  static updateMenu(menuItemName) {
+    console.log(`Menu item ${menuItemName} selected.`);
+
+    const $entry = document.getElementById(`menu-item-${menuItemName}`);
 
     // update active menu entry
     document.getElementById("active").removeAttribute("id");
     $entry.parentElement.id = "active";
-
-    return entryText;
   }
 }
 

@@ -54,13 +54,12 @@ class AddView {
   static bindAddButtonClick(callback) {
     const $form = document.getElementById("add-form");
     $form.addEventListener("submit", (event) => {
+      // prevent default form behavior, i.e., refresh after submission 
       event.preventDefault();
     });
 
     const $addButton = document.getElementById("add-button");
     $addButton.addEventListener("click", (event) => {
-      // prevent default form behavior
-      // event.preventDefault();
       callback(this.getValidatedEntry());
 
       // clear input fields

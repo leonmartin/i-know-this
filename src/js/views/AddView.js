@@ -52,11 +52,22 @@ class AddView {
   }
 
   static bindAddButtonClick(callback) {
+    const $form = document.getElementById("add-form");
+    $form.addEventListener("submit", (event) => {
+      event.preventDefault();
+    });
+
     const $addButton = document.getElementById("add-button");
     $addButton.addEventListener("click", (event) => {
       // prevent default form behavior
       // event.preventDefault();
       callback(this.getValidatedEntry());
+
+      // clear input fields
+      const $inputs = document.getElementsByTagName("input");
+      for (let $input of $inputs) {
+        $input.value = "";
+      }
     });
   }
 
@@ -89,9 +100,8 @@ class AddView {
     // return the entry if category and title are valid
     if (this.isInputValid(category) && this.isInputValid(title)) {
       validatedEntry[category] = entry;
+      return validatedEntry;
     }
-
-    return validatedEntry;
   }
 
   static isInputValid(inputString) {

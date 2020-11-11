@@ -3,7 +3,7 @@ class NotificationManager {
     if (type === "SUCCESS") {
       document.getElementById(
         "notification-container"
-      ).innerHTML = `<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+      ).innerHTML = `<div class="alert alert-success alert-dismissible fade show m-3" role="alert">
                               ${message}
                               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -12,7 +12,7 @@ class NotificationManager {
     } else if (type === "FAIL") {
       document.getElementById(
         "notification-container"
-      ).innerHTML = `<div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+      ).innerHTML = `<div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
                                 ${message}
                                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                   <span aria-hidden="true">&times;</span>

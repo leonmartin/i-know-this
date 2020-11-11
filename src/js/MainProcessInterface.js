@@ -37,7 +37,10 @@ class MainProcessInterface {
   addEntry(entry) {
     // send updated json data to main process on ADD_ENTRY channel
     console.log(entry);
-    ipcRenderer.send("ADD_ENTRY", entry);
+
+    if (entry !== undefined) {
+      ipcRenderer.send("ADD_ENTRY", entry);
+    }
   }
 }
 

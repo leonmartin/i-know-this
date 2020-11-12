@@ -1,5 +1,5 @@
 const { ipcRenderer } = window.nodeRequire("electron");
-import { displayNotification } from "./index.js";
+import Controller from "../controller.js";
 
 class MainProcessInterface {
   constructor() {
@@ -18,7 +18,7 @@ class MainProcessInterface {
       console.log(
         "Renderer process received a message on NOTIFICATION_SUCCESS channel."
       );
-      displayNotification(arg, "SUCCESS");
+      Controller.displayNotification(arg, "SUCCESS");
     });
 
     // listen to NOTIFICATION_FAIL channel
@@ -26,7 +26,7 @@ class MainProcessInterface {
       console.log(
         "Renderer process received a message on NOTIFICATION_FAIL channel."
       );
-      displayNotification(arg, "FAIL");
+      Controller.displayNotification(arg, "FAIL");
     });
   }
 

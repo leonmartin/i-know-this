@@ -111,7 +111,9 @@ function initListeners() {
 
   ipcMain.on("ADD_ENTRY", (event, arg) => {
     console.log(
-      `Main process received a message on ADD_ENTRY channel with object ${JSON.stringify(arg)}.`
+      `Main process received a message on ADD_ENTRY channel with object ${JSON.stringify(
+        arg
+      )}.`
     );
 
     // extract category and entry

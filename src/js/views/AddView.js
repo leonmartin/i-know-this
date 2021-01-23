@@ -1,7 +1,7 @@
 class AddView {
   static renderView() {
-    const view = `<h1>Add</h1>
-                <form id="add-form">
+    const view = `<h1>Add Entry</h1>
+                  <form id="add-form">
                     <div class="form-group">
                       <label for="category-input">Category</label>
                       <input type="text" class="form-control" id="category-input" placeholder="Enter category" required>
@@ -14,7 +14,7 @@ class AddView {
                       <button type="button" class="btn btn-secondary" id="add-additional-button">+ Attribute</button>
                       <button type="submit" class="btn btn-primary" id="add-button">Submit</button>
                     </div>
-                </form>`;
+                  </form>`;
 
     const $mainContainer = document.getElementById("main-container");
     $mainContainer.innerHTML = view;
@@ -93,16 +93,6 @@ class AddView {
     }
 
     return entry;
-  }
-
-  static isInputValid(inputString) {
-    let isValid = true;
-
-    if (inputString === undefined || inputString === "") isValid = false;
-
-    if (inputString.trim() == "") isValid = false;
-
-    return isValid;
   }
 }
 

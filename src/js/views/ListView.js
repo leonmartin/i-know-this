@@ -1,27 +1,26 @@
 class ListView {
   static renderView(jsonData) {
-    let view = `<h1>List</h1>
-                <div id="accordion">`;
+    let view = `<h1>List Entries</h1>
+                <div class="accordion">`;
 
     for (let key in jsonData) {
-      view += `<div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center" id="heading${key}">
-                  <h5 class="mb-0">
-                      <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse${key}" aria-expanded="true" aria-controls="collapse${key}">
+      view += `<div class="accordion-item">
+                  <h5 class="accordion-header" id="heading${key}">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse${key}" aria-expanded="true" aria-controls="collapse${key}">
+                      <div>
                         ${key}
-                      </button>
-                      </h5>
-                  <span class="badge badge-primary badge-pill">${
-                    jsonData[key].length
-                  }</span>
-                </div>
-            
-                <div id="collapse${key}" class="collapse" aria-labelledby="heading${key}" data-parent="#accordion">
-                  <div class="card-body p-0">
-                        ${this.buildList(jsonData[key])}            
+                      </div>
+                      <div class="badge rounded-pill bg-primary ms-1">
+                        ${jsonData[key].length}
+                      </div>
+                    </button>
+                  </h5>
+                  <div class="accordion-collapse collapse" id="collapse${key}" aria-labelledby="heading${key}" data-parent="#accordion">
+                    <div class="accordion-body p-0">
+                      ${this.buildList(jsonData[key])}            
+                    </div>
                   </div>
-                </div>
-              </div>`;
+                </div>`;
     }
 
     view += `</div>`;
@@ -42,14 +41,12 @@ class ListView {
         }
       }
 
-      entryList += `<li data-id="${entry["id"]}" class="list-group-item">
-                      <div class="row d-flex justify-content-between align-items-center">
-                        <div>
-                          ${entryAttributes}
-                        </div>
-                        <div>
-                          <button class="btn btn-primary far fa-trash-alt delete-button"></button>
-                        </div>
+      entryList += `<li data-id="${entry["id"]}" class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        ${entryAttributes}
+                      </div>
+                      <div>
+                        <button class="btn btn-primary far fa-trash-alt delete-button"></button>
                       </div>
                     </li>`;
     }

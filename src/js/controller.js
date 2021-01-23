@@ -21,7 +21,6 @@ class Controller {
     for (let $entry of $menuEntries) {
       $entry.addEventListener("click", () => {
         const menuItemName = $entry.innerHTML;
-        console.log(menuItemName);
         window.history.pushState(menuItemName, "menu_click");
         this.handleMenuClick(menuItemName);
       });

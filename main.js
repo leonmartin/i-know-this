@@ -48,7 +48,7 @@ function createWindow() {
               .then((fileObj) => {
                 if (!fileObj.canceled) {
                   let filePath = path.relative(".", fileObj.filePaths[0]);
-                  console.log(filePath)
+                  console.log(filePath);
                   //  and pass parsed json to renderer process
                   loadAndSendJsonFile(filePath, mainWindow);
                   // save path to config file for next startup

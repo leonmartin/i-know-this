@@ -111,7 +111,7 @@ function initListeners() {
 
   ipcMain.on("ADD_ENTRY", (event, arg) => {
     console.log(
-      `Main process received a message on ADD_ENTRY channel with argument '${arg}'.`
+      `Main process received a message on ADD_ENTRY channel with object ${JSON.stringify(arg)}.`
     );
 
     // extract category and entry
@@ -145,7 +145,7 @@ function initListeners() {
 
   ipcMain.on("DELETE_ENTRY", (event, arg) => {
     console.log(
-      `Main process received a message on DELETE_ENTRY channel with argument '${arg}'.`
+      `Main process received a message on DELETE_ENTRY channel with id '${arg}'.`
     );
 
     const jsonData = FileManager.loadJsonFromFile(

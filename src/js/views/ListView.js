@@ -42,13 +42,13 @@ class ListView {
         }
       }
 
-      entryList += `<li class="list-group-item">
+      entryList += `<li data-id="${entry["id"]}" class="list-group-item">
                       <div class="row d-flex justify-content-between align-items-center">
                         <div>
                           ${entryAttributes}
                         </div>
                         <div>
-                          <button data-id=${entry["id"]} class="btn btn-primary far fa-trash-alt delete-button"></button>
+                          <button class="btn btn-primary far fa-trash-alt delete-button"></button>
                         </div>
                       </div>
                     </li>`;
@@ -62,7 +62,9 @@ class ListView {
 
     for (let $button of $deleteButtons) {
       $button.addEventListener("click", (event) => {
-        deleteCallback(event.target.dataset.id);
+        const $entry = event.target.closest(`li[data-id]`);
+        deleteCallback($entry.dataset.id);
+        $entry.remove();
       });
     }
   }

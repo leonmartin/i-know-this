@@ -42,13 +42,18 @@ class Controller {
         break;
       case "List":
         ListView.renderView(this.mainProcessInterface.getJsonData());
+        ListView.bindDeleteButtonsClick((id) => {
+          if (id !== undefined) {
+            this.mainProcessInterface.deleteEntryById(id);
+          }
+        });
         break;
       case "Add":
         AddView.renderView();
         AddView.bindPlusButtonClick();
-        AddView.bindAddButtonClick((entry) => {
-          if (entry !== undefined) {
-            this.mainProcessInterface.addEntry(entry);
+        AddView.bindAddButtonClick((category, entry) => {
+          if (category !== undefined && entry !== undefined) {
+            this.mainProcessInterface.addEntry(category, entry);
           }
         });
         break;

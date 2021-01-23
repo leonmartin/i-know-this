@@ -2,6 +2,7 @@ const FileManager = require("./src/js/backend/FileManager.js");
 
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require("electron");
 const path = require("path");
+const hash = require("object-hash");
 
 FileManager.createFolderStructure();
 
@@ -99,7 +100,7 @@ function sendMessage(channel, content, window) {
 
 function initListeners() {
   // init listeners
-  ipcMain.on("REQUEST_JSON_DATA", (event, arg) => {
+  ipcMain.on("REQUEST_JSON_DATA", (event) => {
     console.log(
       "Main process received a message on REQUEST_JSON_DATA channel."
     );
@@ -109,11 +110,16 @@ function initListeners() {
   });
 
   ipcMain.on("ADD_ENTRY", (event, arg) => {
-    console.log("Main process received a message on ADD_ENTRY channel.");
+    console.log(
+      `Main process received a message on ADD_ENTRY channel with argument '${arg}'.`
+    );
 
     // extract category and entry
     const category = Object.keys(arg)[0];
     const entry = arg[category];
+
+    // generate hash and store as id
+    entry["id"] = hash(entry);
 
     const jsonData = FileManager.loadJsonFromFile(
       FileManager.loadConfigFromFile()["json_path"]
@@ -138,25 +144,30 @@ function initListeners() {
   });
 
   ipcMain.on("DELETE_ENTRY", (event, arg) => {
-    console.log("Main process received a message on DELETE_ENTRY channel.");
-
-    // extract category and entry
-    const category = Object.keys(arg)[0];
-    const entry = arg[category];
+    console.log(
+      `Main process received a message on DELETE_ENTRY channel with argument '${arg}'.`
+    );
 
     const jsonData = FileManager.loadJsonFromFile(
       FileManager.loadConfigFromFile()["json_path"]
     );
 
-    let index;
+    // find and delete entry
+    for (let category in jsonData) {
+      if (jsonData[category].find((entry) => entry["id"] === arg)) {
+        const index = jsonData[category].findIndex(
+          (entry) => entry["id"] === arg
+        );
+        jsonData[category].splice(index, 1);
 
-    for (elementIndex in jsonData[category]) {
-      if (jsonData[category][elementIndex] == entry) {
-        index = elementIndex;
+        // delete category if no entries are left
+        if (jsonData[category].length === 0) {
+          delete jsonData[category];
+        }
+
+        break;
       }
     }
-
-    jsonData = jsonData[category].splice(elementIndex, 1);
 
     // persist updated json
     if (

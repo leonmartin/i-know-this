@@ -34,10 +34,18 @@ class MainProcessInterface {
     return ipcRenderer.sendSync("REQUEST_JSON_DATA", "");
   }
 
-  addEntry(entry) {
+  addEntry(category, entry) {
+    const messagePayload = {};
+    messagePayload[category] = entry;
     // send updated json data to main process on ADD_ENTRY channel
-    console.log(entry);
-    ipcRenderer.send("ADD_ENTRY", entry);
+    console.log(messagePayload);
+    ipcRenderer.send("ADD_ENTRY", messagePayload);
+  }
+
+  deleteEntryById(id) {
+    // send updated json data to main process on ADD_ENTRY channel
+    console.log(id);
+    ipcRenderer.send("DELETE_ENTRY", id);
   }
 }
 

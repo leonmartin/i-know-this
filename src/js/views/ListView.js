@@ -1,7 +1,5 @@
 class ListView {
   static renderView(jsonData) {
-    const $mainContainer = document.getElementById("main-container");
-
     let view = `<h1>List</h1>
                 <div id="accordion">`;
 
@@ -20,10 +18,7 @@ class ListView {
             
                 <div id="collapse${key}" class="collapse" aria-labelledby="heading${key}" data-parent="#accordion">
                   <div class="card-body p-0">
-                    <ul class="list-group list-group-flush">
-                        ${this.buildList(jsonData[key])}
-                    </ul>
-                    
+                        ${this.buildList(jsonData[key])}            
                   </div>
                 </div>
               </div>`;
@@ -31,32 +26,45 @@ class ListView {
 
     view += `</div>`;
 
+    const $mainContainer = document.getElementById("main-container");
     $mainContainer.innerHTML = view;
   }
 
-  static buildList(jsonArray) {
-    let htmlList = ``;
+  static buildList(categoryEntries) {
+    let entryList = `<ul class="list-group list-group-flush">`;
 
-    for (let elem of jsonArray) {
-      let paragraphs = ``;
+    for (let entry of categoryEntries) {
+      let entryAttributes = ``;
 
-      for (let key in elem) {
-        paragraphs += `<p class="mb-0">${key}: ${elem[key]}</p>`;
+      for (let attribute in entry) {
+        if (attribute !== "id") {
+          entryAttributes += `<p class="mb-0">${attribute}: ${entry[attribute]}</p>`;
+        }
       }
 
-      htmlList += `<li class="list-group-item">
+      entryList += `<li class="list-group-item">
                       <div class="row d-flex justify-content-between align-items-center">
-                        <div class="">
-                          ${paragraphs}
+                        <div>
+                          ${entryAttributes}
                         </div>
-                        <div class="">
-                          <button class="btn btn-primary far fa-trash-alt"></button>
+                        <div>
+                          <button data-id=${entry["id"]} class="btn btn-primary far fa-trash-alt delete-button"></button>
                         </div>
                       </div>
                     </li>`;
     }
 
-    return htmlList;
+    return entryList + "</ul>";
+  }
+
+  static bindDeleteButtonsClick(deleteCallback) {
+    const $deleteButtons = document.getElementsByClassName("delete-button");
+
+    for (let $button of $deleteButtons) {
+      $button.addEventListener("click", (event) => {
+        deleteCallback(event.target.dataset.id);
+      });
+    }
   }
 }
 

@@ -1,24 +1,22 @@
 class AddView {
   static renderView() {
+    const view = `<h1>Add</h1>
+                <form id="add-form">
+                    <div class="form-group">
+                      <label for="category-input">Category</label>
+                      <input type="text" class="form-control" id="category-input" placeholder="Enter category" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="title-input">Title</label>
+                      <input type="text" class="form-control" id="title-input" placeholder="Enter title" required>
+                    </div>
+                    <div class="btn-group" id="form-button-group" role="group">
+                      <button type="button" class="btn btn-secondary" id="add-additional-button">+ Attribute</button>
+                      <button type="submit" class="btn btn-primary" id="add-button">Submit</button>
+                    </div>
+                </form>`;
+
     const $mainContainer = document.getElementById("main-container");
-
-    let view = `<h1>Add</h1>`;
-
-    view += `<form id="add-form">
-                <div class="form-group">
-                  <label for="category-input">Category</label>
-                  <input type="text" class="form-control" id="category-input" placeholder="Enter category" required>
-                </div>
-                <div class="form-group">
-                  <label for="title-input">Title</label>
-                  <input type="text" class="form-control" id="title-input" placeholder="Enter title" required>
-                </div>
-                <div class="btn-group" id="form-button-group" role="group" aria-label="Basic example">
-                  <button type="button" class="btn btn-secondary" id="add-additional-button">+</button>
-                  <button type="submit" class="btn btn-primary" id="add-button">Submit</button>
-                </div>
-            </form>`;
-
     $mainContainer.innerHTML = view;
   }
 
@@ -51,16 +49,19 @@ class AddView {
     });
   }
 
-  static bindAddButtonClick(callback) {
+  static bindAddButtonClick(addCallback) {
     const $form = document.getElementById("add-form");
     $form.addEventListener("submit", (event) => {
-      // prevent default form behavior, i.e., refresh after submission 
+      // prevent default form behavior, i.e., refresh after submission
       event.preventDefault();
     });
 
     const $addButton = document.getElementById("add-button");
-    $addButton.addEventListener("click", (event) => {
-      callback(this.getValidatedEntry());
+    $addButton.addEventListener("click", () => {
+
+      const entry = this.getEntry();
+      const category = document.getElementById("category-input").value;
+      addCallback(category, entry);
 
       // clear input fields
       const $inputs = document.getElementsByTagName("input");
@@ -70,11 +71,8 @@ class AddView {
     });
   }
 
-  static getValidatedEntry() {
+  static getEntry() {
     const entry = {};
-
-    // get category
-    const category = document.getElementById("category-input").value;
 
     // get title
     const title = document.getElementById("title-input").value;
@@ -94,13 +92,7 @@ class AddView {
       }
     }
 
-    const validatedEntry = {};
-
-    // return the entry if category and title are valid
-    if (this.isInputValid(category) && this.isInputValid(title)) {
-      validatedEntry[category] = entry;
-      return validatedEntry;
-    }
+    return entry;
   }
 
   static isInputValid(inputString) {

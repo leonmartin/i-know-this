@@ -98,6 +98,9 @@ function sendMessage(channel, content, window) {
   window.webContents.send(channel, content);
 }
 
+/**
+ * Initializes the listeners for communication with the renderer process.
+ */
 function initListeners() {
   // init listeners
   ipcMain.on("REQUEST_JSON_DATA", (event) => {
@@ -107,6 +110,44 @@ function initListeners() {
     event.returnValue = FileManager.loadJsonFromFile(
       FileManager.loadConfigFromFile()["json_path"]
     );
+  });
+
+  ipcMain.on("REQUEST_ENTRY", (event, arg) => {
+    console.log(
+      `Main process received a message on REQUEST_ENTRY channel with id '${arg}'.`
+    );
+
+    const jsonData = FileManager.loadJsonFromFile(
+      FileManager.loadConfigFromFile()["json_path"]
+    );
+
+    // find and return entry
+    for (let category in jsonData) {
+      if (jsonData[category].find((entry) => entry["id"] === arg)) {
+        event.returnValue = jsonData[category].find(
+          (entry) => entry["id"] === arg
+        );
+        break;
+      }
+    }
+  });
+
+  ipcMain.on("REQUEST_ENTRY_CATEGORY", (event, arg) => {
+    console.log(
+      `Main process received a message on REQUEST_ENTRY_CATEGORY channel with id '${arg}'.`
+    );
+
+    const jsonData = FileManager.loadJsonFromFile(
+      FileManager.loadConfigFromFile()["json_path"]
+    );
+
+    // find and return category of entry
+    for (let category in jsonData) {
+      if (jsonData[category].find((entry) => entry["id"] === arg)) {
+        event.returnValue = category;
+        break;
+      }
+    }
   });
 
   ipcMain.on("ADD_ENTRY", (event, arg) => {
@@ -120,12 +161,31 @@ function initListeners() {
     const category = Object.keys(arg)[0];
     const entry = arg[category];
 
-    // generate hash and store as id
-    entry["id"] = hash(entry);
-
     const jsonData = FileManager.loadJsonFromFile(
       FileManager.loadConfigFromFile()["json_path"]
     );
+
+    if (entry["id"] !== undefined) {
+      // find and delete entry
+      for (let category in jsonData) {
+        if (jsonData[category].find((oldEntry) => oldEntry["id"] === arg)) {
+          const index = jsonData[category].findIndex(
+            (oldEntry) => oldEntry["id"] === arg
+          );
+          jsonData[category].splice(index, 1);
+
+          // delete category if no entries are left
+          if (jsonData[category].length === 0) {
+            delete jsonData[category];
+          }
+
+          break;
+        }
+      }
+    }
+
+    // generate hash and store as id
+    entry["id"] = hash(arg);
 
     // add entry to json object in according category
     jsonData[category] === undefined

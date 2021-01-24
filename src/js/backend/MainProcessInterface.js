@@ -6,8 +6,11 @@ class MainProcessInterface {
     this.initListeners();
   }
 
+  /**
+   * Initiates the listeners for communication with the main process.
+   */
   initListeners() {
-    // listen to FILE_OPEN channel
+    // listen to JSON_DATA channel
     ipcRenderer.on("JSON_DATA", (event, args) => {
       console.log("Renderer process received a message on JSON_DATA channel.");
       this.jsonData = args;
@@ -34,11 +37,18 @@ class MainProcessInterface {
     return ipcRenderer.sendSync("REQUEST_JSON_DATA", "");
   }
 
+  getEntryById(id) {
+    return ipcRenderer.sendSync("REQUEST_ENTRY", id);
+  }
+
+  getCategoryOfEntryById(id) {
+    return ipcRenderer.sendSync("REQUEST_ENTRY_CATEGORY", id);
+  }
+
   addEntry(category, entry) {
     const messagePayload = {};
     messagePayload[category] = entry;
     // send updated json data to main process on ADD_ENTRY channel
-    console.log(messagePayload);
     ipcRenderer.send("ADD_ENTRY", messagePayload);
   }
 

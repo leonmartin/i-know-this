@@ -46,6 +46,21 @@ class Controller {
             this.mainProcessInterface.deleteEntryById(id);
           }
         });
+        ListView.bindEditButtonsClick((id) => {
+          if (id !== undefined) {
+            const category = this.mainProcessInterface.getCategoryOfEntryById(
+              id
+            );
+            const entry = this.mainProcessInterface.getEntryById(id);
+            AddView.renderView(category, entry);
+            AddView.bindPlusButtonClick();
+            AddView.bindAddButtonClick((category, entry) => {
+              if (category !== undefined && entry !== undefined) {
+                this.mainProcessInterface.addEntry(category, entry);
+              }
+            });
+          }
+        });
         break;
       case "Add":
         AddView.renderView();

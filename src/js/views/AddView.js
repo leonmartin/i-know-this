@@ -1,15 +1,24 @@
 class AddView {
-  static renderView() {
+  static renderView(category = "", entry = { Title: "" }) {
+    let initialInputs = `<div class="mb-3">
+                            <label for="category-input" class="form-label">Category</label>
+                            <input type="text" class="form-control" id="category-input" value="${category}" required>
+                          </div>`;
+
+    for (let attribute in entry) {
+      if (attribute === "id") {
+        continue;
+      }
+
+      initialInputs += `<div class="mb-3">
+                          <label for="${attribute}-input" class="form-label">${attribute}</label>
+                          <input type="text" class="form-control" id="${attribute}-input" value="${entry[attribute]}" required>
+                        </div>`;
+    }
+
     const view = `<h1>Add Entry</h1>
                   <form id="add-form">
-                    <div class="form-group">
-                      <label for="category-input">Category</label>
-                      <input type="text" class="form-control" id="category-input" placeholder="Enter category" required>
-                    </div>
-                    <div class="form-group">
-                      <label for="title-input">Title</label>
-                      <input type="text" class="form-control" id="title-input" placeholder="Enter title" required>
-                    </div>
+                    ${initialInputs}
                     <div class="btn-group" id="form-button-group" role="group">
                       <button type="button" class="btn btn-secondary" id="add-additional-button">+ Attribute</button>
                       <button type="submit" class="btn btn-primary" id="add-button">Submit</button>
@@ -35,15 +44,15 @@ class AddView {
 
       const template = document.createElement("template");
       template.innerHTML = `<div class="additional-attribute">
-                            <div class="form-group">
-                              <label>Additional Attribute #${counter}</label>
-                              <input type="text" class="form-control" id="key-input" placeholder="Enter additional attribute #${counter}">
-                            </div>
-                            <div class="form-group">
-                              <label>Value of attribute #${counter}</label>
-                              <input type="text" class="form-control" id="value-input" placeholder="Enter value of additional attribute #${counter}">
-                            </div>
-                          </div>`;
+                              <div class="mb-3">
+                                <label for="key${counter}-input" class="form-label">Name of additional attribute #${counter}</label>
+                                <input type="text" class="form-control key-input" id="key${counter}-input">
+                              </div>
+                              <div class="mb-3">
+                                <label for="value${counter}-input" class="form-label">Value of additional attribute #${counter}</label>
+                                <input type="text" class="form-control value-input" id="value${counter}-input">
+                              </div>
+                            </div>`;
 
       $form.insertBefore(template.content.firstChild, $buttonGroup);
     });
@@ -58,7 +67,6 @@ class AddView {
 
     const $addButton = document.getElementById("add-button");
     $addButton.addEventListener("click", () => {
-
       const entry = this.getEntry();
       const category = document.getElementById("category-input").value;
       addCallback(category, entry);
@@ -75,7 +83,7 @@ class AddView {
     const entry = {};
 
     // get title
-    const title = document.getElementById("title-input").value;
+    const title = document.getElementById("Title-input").value;
     entry["Title"] = title;
 
     // iterate over form groups for additional attributes to get other key-value-pairs
@@ -84,12 +92,9 @@ class AddView {
     );
 
     for (let $additionalAttribute of $additionalAttributes) {
-      const key = $additionalAttribute.querySelector("#key-input").value;
-      const value = $additionalAttribute.querySelector("#value-input").value;
-
-      if (this.isInputValid(key) && this.isInputValid(value)) {
-        entry[key] = value;
-      }
+      const key = $additionalAttribute.querySelector(".key-input").value;
+      const value = $additionalAttribute.querySelector(".value-input").value;
+      entry[key] = value;
     }
 
     return entry;

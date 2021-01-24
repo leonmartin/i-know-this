@@ -46,7 +46,10 @@ class ListView {
                         ${entryAttributes}
                       </div>
                       <div>
-                        <button class="btn btn-primary far fa-trash-alt delete-button"></button>
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                          <button class="btn btn-primary fas fa-edit edit-button"></button>
+                          <button class="btn btn-primary far fa-trash-alt delete-button"></button>
+                        </div>
                       </div>
                     </li>`;
     }
@@ -59,9 +62,31 @@ class ListView {
 
     for (let $button of $deleteButtons) {
       $button.addEventListener("click", (event) => {
-        const $entry = event.target.closest(`li[data-id]`);
+        const $entry = event.target.closest("li[data-id]");
         deleteCallback($entry.dataset.id);
-        $entry.remove();
+
+        // update count pill
+        const $accordionItem = $entry.closest(".accordion-item");
+        const $pill = $accordionItem.querySelector(".badge");
+        $pill.innerHTML = $pill.innerHTML - 1;
+
+        if ($pill.innerHTML == 0) {
+          $accordionItem.remove();
+        } else {
+          $entry.remove();
+        }
+
+      });
+    }
+  }
+
+  static bindEditButtonsClick(editCallback) {
+    const $editButtons = document.getElementsByClassName("edit-button");
+
+    for (let $button of $editButtons) {
+      $button.addEventListener("click", (event) => {
+        const $entry = event.target.closest(`li[data-id]`);
+        editCallback($entry.dataset.id);
       });
     }
   }

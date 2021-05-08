@@ -10,12 +10,6 @@ class MainProcessInterface {
    * Initiates the listeners for communication with the main process.
    */
   initListeners() {
-    // listen to JSON_DATA channel
-    ipcRenderer.on("JSON_DATA", (event, args) => {
-      console.log("Renderer process received a message on JSON_DATA channel.");
-      this.jsonData = args;
-    });
-
     // listen to NOTIFICATION_SUCCESS channel
     ipcRenderer.on("NOTIFICATION_SUCCESS", (event, arg) => {
       console.log(

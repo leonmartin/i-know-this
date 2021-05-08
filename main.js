@@ -49,25 +49,11 @@ function createWindow() {
               .then((fileObj) => {
                 if (!fileObj.canceled) {
                   const filePath = path.relative(".", fileObj.filePaths[0]);
-                  // save path to config file for next startup
-                  FileManager.loadConfigFromFile()["json_path"] = filePath;
-                  FileManager.writeConfigToFile(
-                    FileManager.loadConfigFromFile()
-                  );
-                  // pass parsed json to renderer process
-                  const jsonData = FileManager.loadJsonFromFile(
-                    FileManager.loadConfigFromFile()["json_path"]
-                  );
-
-                  if (jsonData) {
-                    sendMessage("JSON_DATA", jsonData, mainWindow);
-                  } else {
-                    sendMessage(
-                      "NOTIFICATION_FAIL",
-                      "JSON data could not be loaded!",
-                      mainWindow
-                    );
-                  }
+                  // save new path to config
+                  const config = FileManager.loadConfigFromFile();
+                  config["json_path"] = filePath;
+                  FileManager.writeConfigToFile(config);
+                  mainWindow.reload();
                 }
               })
               .catch((err) => {
@@ -123,10 +109,11 @@ function initListeners() {
 
     // find and return entry
     for (let category in jsonData) {
-      if (jsonData[category].find((entry) => entry["id"] === arg)) {
-        event.returnValue = jsonData[category].find(
-          (entry) => entry["id"] === arg
-        );
+      const found_entry = jsonData[category].find(
+        (entry) => entry["id"] === arg
+      );
+      if (found_entry) {
+        event.returnValue = found_entry;
         break;
       }
     }

@@ -1,0 +1,31 @@
+{
+  "name": "i-know-this",
+  "version": "0.1.0",
+  "description": "A small Electron app for managing JSON files used as a personal database.",
+  "main": "main.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leonmartin/i-know-this.git"
+  },
+  "author": "Leon Martin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/leonmartin/i-know-this/issues"
+  },
+  "homepage": "https://github.com/leonmartin/i-know-this#readme",
+  "devDependencies": {
+    "electron": "^10.1.5",
+    "mocha": "^8.2.0",
+    "spectron": "^12.0.0"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
+    "bootstrap": "^5.0.0-beta1",
+    "jquery": "^3.5.1",
+    "object-hash": "^2.1.1"
+  }
+}

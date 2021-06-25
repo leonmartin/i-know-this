@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="script-src 'self' 'unsafe-inline';"
+    />
+
+    <!-- Third Party CSS -->
+    <link
+      rel="stylesheet"
+      href="../../node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="../../node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/main.css" />
+
+    <title>I Know This</title>
+  </head>
+
+  <body>
+    <div class="container-fluid h-100">
+      <div class="row h-100">
+        <div class="col-3" id="sidebar-container">
+          <nav class="h-100" id="sidebar">
+            <ul class="list-unstyled">
+              <li class="sidebar-link" id="active">
+                <p class="sidebar-link-p" id="menu-item-Overview">Overview</p>
+              </li>
+              <li class="sidebar-link">
+                <p class="sidebar-link-p" id="menu-item-List">List</p>
+              </li>
+              <li class="sidebar-link">
+                <p class="sidebar-link-p" id="menu-item-Add">Add</p>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div class="col-9">
+          <div id="main-container" class="container p-0"></div>
+        </div>
+        <div class="toast-container fixed-bottom"></div>
+      </div>
+    </div>
+
+    <!-- To avoid conflicts with third party JS -->
+    <script>
+      window.nodeRequire = require;
+      delete window.require;
+      delete window.exports;
+      delete window.module;
+    </script>
+
+    <!-- Third Party JS -->
+    <script src="../../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <!-- Custom JS -->
+    <script type="module" src="../js/controller.js"></script>
+  </body>
+</html>

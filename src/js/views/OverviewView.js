@@ -1,6 +1,6 @@
 class OverviewView {
   static renderView(entriesPerCategory) {
-    const $mainContainer = document.getElementById("main-container");
+    const $mainContainer = document.getElementById("main-content");
 
     let view = `<h1>Overview</h1>`;
 

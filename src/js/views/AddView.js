@@ -22,7 +22,7 @@ class AddView {
                     </div>
                   </form>`;
 
-    const $mainContainer = document.getElementById("main-container");
+    const $mainContainer = document.getElementById("main-content");
     $mainContainer.innerHTML = view;
   }
 

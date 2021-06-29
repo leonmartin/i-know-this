@@ -28,7 +28,7 @@ class ListView {
 
     view += `</div>`;
 
-    const $mainContainer = document.getElementById("main-container");
+    const $mainContainer = document.getElementById("main-content");
     $mainContainer.innerHTML = view;
   }
 

@@ -1,6 +1,10 @@
 # Directory for builds
 resources
 
+# Database
+data/*
+!data/.gitkeep
+
 # Logs
 logs
 *.log

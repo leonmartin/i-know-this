@@ -37,10 +37,10 @@ class Controller {
     // render view with respect to selected menu entry and current json data
     switch (menuItemName) {
       case "Overview":
-        OverviewView.renderView(this.mainProcessInterface.getJsonData());
+        OverviewView.renderView(this.mainProcessInterface.requestAllEntries());
         break;
       case "List":
-        ListView.renderView(this.mainProcessInterface.getJsonData());
+        ListView.renderView(this.mainProcessInterface.requestAllEntries());
         ListView.bindDeleteButtonsClick((id) => {
           if (id !== undefined) {
             this.mainProcessInterface.deleteEntryById(id);
@@ -48,15 +48,11 @@ class Controller {
         });
         ListView.bindEditButtonsClick((id) => {
           if (id !== undefined) {
-            const category =
-              this.mainProcessInterface.getCategoryOfEntryById(id);
             const entry = this.mainProcessInterface.getEntryById(id);
-            AddView.renderView(category, entry);
+            AddView.renderView(entry);
             AddView.bindPlusButtonClick();
-            AddView.bindAddButtonClick((category, entry) => {
-              if (category !== undefined && entry !== undefined) {
-                this.mainProcessInterface.addEntry(category, entry);
-              }
+            AddView.bindAddButtonClick((entry) => {
+              this.mainProcessInterface.addOrUpdateEntry(entry);
             });
           }
         });
@@ -64,10 +60,8 @@ class Controller {
       case "Add":
         AddView.renderView();
         AddView.bindPlusButtonClick();
-        AddView.bindAddButtonClick((category, entry) => {
-          if (category !== undefined && entry !== undefined) {
-            this.mainProcessInterface.addEntry(category, entry);
-          }
+        AddView.bindAddButtonClick((entry) => {
+          this.mainProcessInterface.addOrUpdateEntry(entry);
         });
         break;
     }

@@ -1,19 +1,16 @@
 class AddView {
-  static renderView(category = "", entry = { Title: "" }) {
-    let initialInputs = `<div class="mb-3">
-                            <label for="category-input" class="form-label">Category</label>
-                            <input type="text" class="form-control" id="category-input" value="${category}" required>
-                          </div>`;
+  static renderView(entry = { category: "", title: "" }) {
+    let initialInputs = ``;
 
     for (let attribute in entry) {
-      if (attribute === "id") {
-        continue;
+      if (attribute === "_id") {
+        initialInputs += `<div id="_id" class="mb-3 d-none">${entry[attribute]}</div>`;
+      } else {
+        initialInputs += `<div class="mb-3">
+                            <label for="${attribute}-input" class="form-label">${attribute}</label>
+                            <input type="text" class="form-control" id="${attribute}-input" value="${entry[attribute]}" required>
+                          </div>`;
       }
-
-      initialInputs += `<div class="mb-3">
-                          <label for="${attribute}-input" class="form-label">${attribute}</label>
-                          <input type="text" class="form-control" id="${attribute}-input" value="${entry[attribute]}" required>
-                        </div>`;
     }
 
     const view = `<h1>Add Entry</h1>
@@ -68,8 +65,7 @@ class AddView {
     const $addButton = document.getElementById("add-button");
     $addButton.addEventListener("click", () => {
       const entry = this.getEntry();
-      const category = document.getElementById("category-input").value;
-      addCallback(category, entry);
+      addCallback(entry);
 
       // clear input fields
       const $inputs = document.getElementsByTagName("input");
@@ -82,9 +78,19 @@ class AddView {
   static getEntry() {
     const entry = {};
 
+    // get id
+    if (document.getElementById("_id")) {
+      const id = document.getElementById("_id").innerHTML;
+      entry["_id"] = id;
+    }
+
+    // get category
+    const category = document.getElementById("category-input").value;
+    entry["category"] = category;
+
     // get title
-    const title = document.getElementById("Title-input").value;
-    entry["Title"] = title;
+    const title = document.getElementById("title-input").value;
+    entry["title"] = title;
 
     // iterate over form groups for additional attributes to get other key-value-pairs
     const $additionalAttributes = document.getElementsByClassName(

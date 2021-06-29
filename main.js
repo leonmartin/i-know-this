@@ -1,10 +1,10 @@
-const FileManager = require("./src/js/backend/FileManager.js");
+const DatabaseInterface = require("./src/js/backend/DatabaseInterface.js");
 
 const { app, BrowserWindow, Menu, dialog, ipcMain } = require("electron");
 const path = require("path");
 const hash = require("object-hash");
 
-FileManager.createFolderStructure();
+const dbInterface = new DatabaseInterface();
 
 app.whenReady().then(createWindow).then(initListeners);
 const isMac = process.platform === "darwin";
@@ -37,31 +37,6 @@ function createWindow() {
       label: "Menu",
       submenu: [
         {
-          label: "Open File",
-          accelerator: "CmdOrCtrl+O",
-          click() {
-            // show dialog to open json file
-            dialog
-              .showOpenDialog({
-                properties: ["openFile"],
-                filters: [{ name: "JSON Files", extensions: ["json", "JSON"] }],
-              })
-              .then((fileObj) => {
-                if (!fileObj.canceled) {
-                  const filePath = path.relative(".", fileObj.filePaths[0]);
-                  // save new path to config
-                  const config = FileManager.loadConfigFromFile();
-                  config["json_path"] = filePath;
-                  FileManager.writeConfigToFile(config);
-                  mainWindow.reload();
-                }
-              })
-              .catch((err) => {
-                console.error(err);
-              });
-          },
-        },
-        {
           label: "Exit",
           click() {
             app.quit();
@@ -88,146 +63,87 @@ function sendMessage(channel, content, window) {
  * Initializes the listeners for communication with the renderer process.
  */
 function initListeners() {
-  // init listeners
-  ipcMain.on("REQUEST_JSON_DATA", (event) => {
+  ipcMain.on("REQUEST_ALL_ENTRIES", (event) => {
     console.log(
-      "Main process received a message on REQUEST_JSON_DATA channel."
+      "Main process received a message on REQUEST_ALL_ENTRIES channel."
     );
-    event.returnValue = FileManager.loadJsonFromFile(
-      FileManager.loadConfigFromFile()["json_path"]
-    );
+
+    dbInterface.readAllEntries().then((entries) => {
+      event.returnValue = entries;
+    });
   });
 
-  ipcMain.on("REQUEST_ENTRY", (event, arg) => {
+  ipcMain.on("REQUEST_ENTRY", (event, id) => {
     console.log(
-      `Main process received a message on REQUEST_ENTRY channel with id '${arg}'.`
+      `Main process received a message on REQUEST_ENTRY channel with id '${id}'.`
     );
 
-    const jsonData = FileManager.loadJsonFromFile(
-      FileManager.loadConfigFromFile()["json_path"]
-    );
+    dbInterface.readEntry(id).then((entry) => {
+      console.log(entry);
 
-    // find and return entry
-    for (let category in jsonData) {
-      const found_entry = jsonData[category].find(
-        (entry) => entry["id"] === arg
-      );
-      if (found_entry) {
-        event.returnValue = found_entry;
-        break;
+      if (entry) {
+        event.returnValue = entry;
       }
-    }
+    });
   });
 
-  ipcMain.on("REQUEST_ENTRY_CATEGORY", (event, arg) => {
+  ipcMain.on("REQUEST_ENTRY_CATEGORY", (event, id) => {
     console.log(
-      `Main process received a message on REQUEST_ENTRY_CATEGORY channel with id '${arg}'.`
+      `Main process received a message on REQUEST_ENTRY_CATEGORY channel with id '${id}'.`
     );
 
-    const jsonData = FileManager.loadJsonFromFile(
-      FileManager.loadConfigFromFile()["json_path"]
-    );
+    dbInterface.readEntry(id).then((entry) => {
+      console.log(entry);
 
-    // find and return category of entry
-    for (let category in jsonData) {
-      if (jsonData[category].find((entry) => entry["id"] === arg)) {
-        event.returnValue = category;
-        break;
+      if (entry) {
+        event.returnValue = entry.category;
       }
-    }
+    });
   });
 
-  ipcMain.on("ADD_ENTRY", (event, arg) => {
+  ipcMain.on("ADD_OR_UPDATE_ENTRY", (event, entry) => {
     console.log(
-      `Main process received a message on ADD_ENTRY channel with object ${JSON.stringify(
-        arg
+      `Main process received a message on ADD_OR_UPDATE_ENTRY channel with object ${JSON.stringify(
+        entry
       )}.`
     );
 
-    // extract category and entry
-    const category = Object.keys(arg)[0];
-    const entry = arg[category];
-
-    const jsonData = FileManager.loadJsonFromFile(
-      FileManager.loadConfigFromFile()["json_path"]
-    );
-
-    if (entry["id"] !== undefined) {
-      // find and delete entry
-      for (let category in jsonData) {
-        if (jsonData[category].find((oldEntry) => oldEntry["id"] === arg)) {
-          const index = jsonData[category].findIndex(
-            (oldEntry) => oldEntry["id"] === arg
-          );
-          jsonData[category].splice(index, 1);
-
-          // delete category if no entries are left
-          if (jsonData[category].length === 0) {
-            delete jsonData[category];
-          }
-
-          break;
-        }
-      }
-    }
-
-    // generate hash and store as id
-    entry["id"] = hash(arg);
-
-    // add entry to json object in according category
-    jsonData[category] === undefined
-      ? (jsonData[category] = [entry])
-      : jsonData[category].push(entry);
-
-    // persist updated json
-    if (
-      FileManager.writeJsonToFile(
-        FileManager.loadConfigFromFile()["json_path"],
-        jsonData
-      )
-    ) {
-      event.reply("NOTIFICATION_SUCCESS", "New entry successfully saved!");
+    if (entry["_id"]) {
+      dbInterface
+        .updateEntry(entry)
+        .then(() =>
+          event.reply("NOTIFICATION_SUCCESS", "Entry successfully edited!")
+        )
+        .catch(() =>
+          event.event.reply("NOTIFICATION_FAIL", "Entry could not be edited!")
+        );
     } else {
-      event.reply("NOTIFICATION_FAIL", "New entry could not be saved!");
+      dbInterface
+        .addEntry(entry)
+        .then(() =>
+          event.reply("NOTIFICATION_SUCCESS", "New entry successfully saved!")
+        )
+        .catch(() =>
+          event.event.reply(
+            "NOTIFICATION_FAIL",
+            "New entry could not be saved!"
+          )
+        );
     }
   });
 
-  ipcMain.on("DELETE_ENTRY", (event, arg) => {
+  ipcMain.on("DELETE_ENTRY", (event, id) => {
     console.log(
-      `Main process received a message on DELETE_ENTRY channel with id '${arg}'.`
+      `Main process received a message on DELETE_ENTRY channel with id '${id}'.`
     );
 
-    const jsonData = FileManager.loadJsonFromFile(
-      FileManager.loadConfigFromFile()["json_path"]
-    );
-
-    // find and delete entry
-    for (let category in jsonData) {
-      if (jsonData[category].find((entry) => entry["id"] === arg)) {
-        const index = jsonData[category].findIndex(
-          (entry) => entry["id"] === arg
-        );
-        jsonData[category].splice(index, 1);
-
-        // delete category if no entries are left
-        if (jsonData[category].length === 0) {
-          delete jsonData[category];
-        }
-
-        break;
-      }
-    }
-
-    // persist updated json
-    if (
-      FileManager.writeJsonToFile(
-        FileManager.loadConfigFromFile()["json_path"],
-        jsonData
+    dbInterface
+      .removeEntry(id)
+      .then(() =>
+        event.reply("NOTIFICATION_SUCCESS", "Entry successfully deleted!")
       )
-    ) {
-      event.reply("NOTIFICATION_SUCCESS", "Entry successfully deleted!");
-    } else {
-      event.reply("NOTIFICATION_FAIL", "Entry could not be deleted!");
-    }
+      .catch(() =>
+        event.event.reply("NOTIFICATION_FAIL", "Entry could not be deleted!")
+      );
   });
 }

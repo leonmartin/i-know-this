@@ -27,8 +27,8 @@ class MainProcessInterface {
     });
   }
 
-  getJsonData() {
-    return ipcRenderer.sendSync("REQUEST_JSON_DATA", "");
+  requestAllEntries() {
+    return ipcRenderer.sendSync("REQUEST_ALL_ENTRIES", "");
   }
 
   getEntryById(id) {
@@ -39,11 +39,8 @@ class MainProcessInterface {
     return ipcRenderer.sendSync("REQUEST_ENTRY_CATEGORY", id);
   }
 
-  addEntry(category, entry) {
-    const messagePayload = {};
-    messagePayload[category] = entry;
-    // send updated json data to main process on ADD_ENTRY channel
-    ipcRenderer.send("ADD_ENTRY", messagePayload);
+  addOrUpdateEntry(entry) {
+    ipcRenderer.send("ADD_OR_UPDATE_ENTRY", entry);
   }
 
   deleteEntryById(id) {

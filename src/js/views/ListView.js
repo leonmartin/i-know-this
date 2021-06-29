@@ -1,23 +1,26 @@
 class ListView {
-  static renderView(jsonData) {
+  static renderView(entriesPerCategory) {
     let view = `<h1>List Entries</h1>
                 <div class="accordion">`;
 
-    for (let key in jsonData) {
+    for (let category in entriesPerCategory) {
+      const safeCategoryString = category.replace(" ", "");
       view += `<div class="accordion-item">
-                  <h5 class="accordion-header" id="heading${key}">
-                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse${key}" aria-expanded="true" aria-controls="collapse${key}">
+                  <h5 class="accordion-header" id="heading-${safeCategoryString}">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-${safeCategoryString}" aria-expanded="true" aria-controls="collapse-${safeCategoryString}">
                       <div>
-                        ${key}
+                        ${category}
                       </div>
                       <div class="badge rounded-pill bg-primary ms-1">
-                        ${jsonData[key].length}
+                        ${entriesPerCategory[category].length}
                       </div>
                     </button>
                   </h5>
-                  <div class="accordion-collapse collapse" id="collapse${key}" aria-labelledby="heading${key}" data-parent="#accordion">
+                  <div class="accordion-collapse collapse" id="collapse-${safeCategoryString}" aria-labelledby="heading-${safeCategoryString}" data-parent="#accordion">
                     <div class="accordion-body p-0">
-                      ${this.buildList(jsonData[key])}            
+                      ${this.buildList(
+                        entriesPerCategory[category]
+                      )}            
                     </div>
                   </div>
                 </div>`;
@@ -33,17 +36,13 @@ class ListView {
     let entryList = `<ul class="list-group list-group-flush">`;
 
     for (let entry of categoryEntries) {
-      let entryAttributes = ``;
+      let entryParagraphs = Object.keys(entry)
+        .filter((key) => key !== "_id" && key !== "category")
+        .map((key) => `<p class="mb-0">${key}: ${entry[key]}</p>`);
 
-      for (let attribute in entry) {
-        if (attribute !== "id") {
-          entryAttributes += `<p class="mb-0">${attribute}: ${entry[attribute]}</p>`;
-        }
-      }
-
-      entryList += `<li data-id="${entry["id"]}" class="list-group-item d-flex justify-content-between align-items-center">
+      entryList += `<li data-id="${entry["_id"]}" class="list-group-item d-flex justify-content-between align-items-center">
                       <div>
-                        ${entryAttributes}
+                        ${entryParagraphs}
                       </div>
                       <div>
                         <div class="btn-group" role="group" aria-label="Basic example">

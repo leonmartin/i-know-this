@@ -10,23 +10,11 @@ body {
   height: 100%;
 }
 
-#sidebar-container {
-  margin: 0;
-  padding: 0;
-}
-
 #sidebar {
   z-index: 1;
   top: 0;
   left: 0;
   background-color: #3d3d3d;
-}
-
-.sidebar-link-p {
-  color: white;
-  font-size: 1.1em;
-  padding: 10px;
-  margin: 0px;
 }
 
 .sidebar-link#active,

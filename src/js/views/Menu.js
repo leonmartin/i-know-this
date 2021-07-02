@@ -1,8 +1,8 @@
 class Menu {
-  static updateMenu(menuItemName) {
-    console.log(`Menu item ${menuItemName} selected.`);
+  static updateMenu(menuItemId) {
+    console.log(`Menu item ${menuItemId} selected.`);
 
-    const $entry = document.getElementById(`menu-item-${menuItemName}`);
+    const $entry = document.getElementById(menuItemId);
 
     // update active menu entry
     document.getElementById("active").removeAttribute("id");

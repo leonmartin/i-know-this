@@ -20,26 +20,26 @@ class Controller {
     // add event listeners to menu entries
     for (let $entry of $menuEntries) {
       $entry.addEventListener("click", () => {
-        const menuItemName = $entry.innerHTML;
-        window.history.pushState(menuItemName, "menu_click");
-        this.handleMenuClick(menuItemName);
+        const menuItemId = $entry.id;
+        window.history.pushState(menuItemId, "menu_click");
+        this.handleMenuClick(menuItemId);
       });
     }
 
     // inital call for building the view
-    const initialMenuItem = "Overview";
+    const initialMenuItem = "menu-item-Overview";
     window.history.pushState(initialMenuItem, "initial_view");
     this.handleMenuClick(initialMenuItem);
   }
 
-  handleMenuClick(menuItemName) {
-    Menu.updateMenu(menuItemName);
-    // render view with respect to selected menu entry and current json data
-    switch (menuItemName) {
-      case "Overview":
+  handleMenuClick(menuItemId) {
+    Menu.updateMenu(menuItemId);
+    // render view with respect to selected menu entry
+    switch (menuItemId) {
+      case "menu-item-Overview":
         OverviewView.renderView(this.mainProcessInterface.requestAllEntries());
         break;
-      case "List":
+      case "menu-item-List":
         ListView.renderView(this.mainProcessInterface.requestAllEntries());
         ListView.bindDeleteButtonsClick((id) => {
           if (id !== undefined) {
@@ -57,7 +57,7 @@ class Controller {
           }
         });
         break;
-      case "Add":
+      case "menu-item-Add":
         AddView.renderView();
         AddView.bindPlusButtonClick();
         AddView.bindAddButtonClick((entry) => {

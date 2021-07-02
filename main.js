@@ -4,7 +4,7 @@ const { app, BrowserWindow, Menu, dialog, ipcMain } = require("electron");
 const path = require("path");
 const hash = require("object-hash");
 
-const dbInterface = new DatabaseInterface();
+const dbInterface = new DatabaseInterface(app.getPath("userData"));
 
 app.whenReady().then(createWindow).then(initListeners);
 const isMac = process.platform === "darwin";
@@ -47,6 +47,11 @@ function createWindow() {
   ]);
 
   Menu.setApplicationMenu(menu);
+
+  mainWindow.webContents.on('new-window', function(e, url) {
+    e.preventDefault();
+    require('electron').shell.openExternal(url);
+  });
 
   // load index.html
   mainWindow.loadFile("./src/html/index.html");

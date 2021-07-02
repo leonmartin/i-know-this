@@ -3,14 +3,14 @@ const pouchAdapter = require("pouchdb-adapter-leveldb");
 const leveldown = require("leveldown");
 
 class DatabaseInterface {
-  constructor() {
-    this.initDB();
+  constructor(path) {
+    this.initDB(path);
   }
 
-  async initDB() {
+  async initDB(path) {
     rxdb.addRxPlugin(pouchAdapter);
     this.db = await rxdb.createRxDatabase({
-      name: "data/defaultdb",
+      name: path,
       adapter: leveldown,
     });
 

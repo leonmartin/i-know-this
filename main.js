@@ -48,9 +48,9 @@ function createWindow() {
 
   Menu.setApplicationMenu(menu);
 
-  mainWindow.webContents.on('new-window', function(e, url) {
+  mainWindow.webContents.on("new-window", function (e, url) {
     e.preventDefault();
-    require('electron').shell.openExternal(url);
+    require("electron").shell.openExternal(url);
   });
 
   // load index.html
